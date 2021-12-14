@@ -95,9 +95,41 @@ void ClientGame::UiClient()
     ui.setUiClient();
     int y = 23;
     int x = 40;
+    int data_length = 0;
+    string sig = "";
     gotoXY(40, 23); cout << ">>" << endl;
     while (1)
     {
+        data_length = network->Receive(network_data);
+        sig = string(network_data, 0, data_length);
+        if (data_length > 0 && sig == "Join")
+        {
+            clrscr();
+            ui.draw.DrawOut();
+            gotoXY(40, 25);
+            cout << "Someone invite you to play";
+            gotoXY(40, 27);
+            cout << "Enter to play";
+            while (_kbhit())
+            {
+                char t = _getch();
+                if (t == 13)
+                {
+                    //send to sv
+                    string tmp = "Yes";
+                    send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                }
+                else
+                {
+                    string tmp = "No";
+                    send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                }
+            }
+            //send to play game
+
+        }
+
+
         if (_kbhit())
         {
             char t = _getch();
@@ -179,6 +211,7 @@ void ClientGame::UiClient()
         }
     }
 }
+
 void ClientGame::CheckUser()
 {
     clrscr();
@@ -443,7 +476,6 @@ void ClientGame::CheckUser()
         }
     }
 }
-
 
 void ClientGame::Login()
 {
@@ -1349,13 +1381,13 @@ void ClientGame::Playgame() {
     char req[] = "ListOnline";
     send(network->ClientSocket, req, strlen(req), 0);
 
-    int data=0;
+    int data = 0;
     data = network->Receive(network_data);
 
     string sig = string(network_data, 0, data);
     Onlinelist = getOnlinelist(sig);
     ui.ShowOnlinePlayer(Onlinelist);
-    int x1=40, y1 = 22;
+    int x1 = 40, y1 = 22;
     if (data == 0)
     {
         gotoXY(40, 44);
@@ -1373,15 +1405,15 @@ void ClientGame::Playgame() {
             char t = _getch();
             if (t == 9)
             {
-                if ( y1<Onlinelist.size()*2+20)
+                if (y1 < Onlinelist.size() * 2 + 20)
                 {
                     y1 += 2;
                     gotoXY(x1, y1);
                     cout << ">>";
-                    gotoXY(x1, y1-2);
+                    gotoXY(x1, y1 - 2);
                     cout << "  ";
                 }
-                else if (y1 == 20+Onlinelist.size()*2)
+                else if (y1 == 20 + Onlinelist.size() * 2)
                 {
                     gotoXY(40, 44);
                     cout << ">>";
@@ -1389,7 +1421,7 @@ void ClientGame::Playgame() {
                     cout << "  ";
                 }
             }
-            else if (t == 13 && y1==44)
+            else if (t == 13 && y1 == 44)
             {
                 setsignal("UiClient");
                 return;
@@ -1397,12 +1429,22 @@ void ClientGame::Playgame() {
             else if (t == 13)
             {
                 //send to sv
-                string re = "ConnectClient" + Onlinelist[(y1 - 20) / 2]->id();
+                string re = "ConnectClient:" + Onlinelist[(y1 - 20) / 2]->id();
                 send(network->ClientSocket, re.c_str(), strlen(re.c_str()), 0);
+                data = network->Receive(network_data);
+                sig = string(network_data, 0, data);
+                if (sig == "Yes")
+                {
+                    break;
+                }
+                else 
+                {
+                    setsignal("UiClient");
+                    return;
+                }
             }
         }
     }
-
 
 
     ui.Map();
@@ -1415,81 +1457,81 @@ void ClientGame::Playgame() {
     gotoXY(42, 40);
     cout << ">>" << endl;
     while (1)
-    {
-        if (y != 44)  ui.cur(x, y);
-        if (_kbhit())
         {
-            char t = _getch();
-            if (t == 9)
+            if (y != 44)  ui.cur(x, y);
+            if (_kbhit())
             {
-                if (y == 40)
+                char t = _getch();
+                if (t == 9)
                 {
-                    x = pcoy; y = 42;
-                    gotoXY(42, 42);
-                    cout << ">>" << endl;
-                    gotoXY(42, 40);
-                    cout << "  " << endl;
+                    if (y == 40)
+                    {
+                        x = pcoy; y = 42;
+                        gotoXY(42, 42);
+                        cout << ">>" << endl;
+                        gotoXY(42, 40);
+                        cout << "  " << endl;
+                    }
+                    else if (y == 42)
+                    {
+                        y = 44;
+                        gotoXY(42, 44);
+                        cout << ">>" << endl;
+                        gotoXY(42, 42);
+                        cout << "  " << endl;
+                    }
+                    else if (y == 44)
+                    {
+                        y = 40; x = pcox;
+                        gotoXY(42, 40);
+                        cout << ">>" << endl;
+                        gotoXY(42, 44);
+                        cout << "  " << endl;
+                    }
                 }
-                else if (y == 42)
+                else if (t == 13 && pcox != 65 and pcoy != 65 && y == 44)
                 {
-                    y = 44;
-                    gotoXY(42, 44);
-                    cout << ">>" << endl;
-                    gotoXY(42, 42);
-                    cout << "  " << endl;
+                    //send
                 }
-                else if (y == 44)
+                else if (t != 8 && x >= 65 && x < 67 && y == 40)
                 {
-                    y = 40; x = pcox;
-                    gotoXY(42, 40);
-                    cout << ">>" << endl;
-                    gotoXY(42, 44);
-                    cout << "  " << endl;
+                    //type id
+                    gotoXY(x, y);
+                    putchar(t);
+                    cox.push_back(t);
+                    x++;
+                    pcox = x;
                 }
-            }
-            else if (t == 13 && pcox != 65 and pcoy != 65 && y == 44)
-            {
-                //send
-            }
-            else if (t != 8 && x >= 65 && x < 67 && y == 40)
-            {
-                //type id
-                gotoXY(x, y);
-                putchar(t);
-                cox.push_back(t);
-                x++;
-                pcox = x;
-            }
-            else if (t != 8 && x >= 65 && x < 67 && y == 42)
-            {
-                //type id
-                gotoXY(x, y);
-                putchar(t);
-                coy.push_back(t);
-                x++;
-                pcoy = x;
-            }
+                else if (t != 8 && x >= 65 && x < 67 && y == 42)
+                {
+                    //type id
+                    gotoXY(x, y);
+                    putchar(t);
+                    coy.push_back(t);
+                    x++;
+                    pcoy = x;
+                }
 
-            else if (t == 8 && x > 65 && x <= 67 && y == 40)
-            {
-                //clear
-                gotoXY(x, y);
-                putchar(' ');
-                cox.erase(cox.length() - 1);
-                x--;
-                pcox = x;
-            }
-            else if (t == 8 && x > 65 && x <= 67 && y == 42)
-            {
-                //clear
-                gotoXY(x, y);
-                putchar(' ');
-                coy.erase(coy.length() - 1);
-                x--;
-                pcoy = x;
+                else if (t == 8 && x > 65 && x <= 67 && y == 40)
+                {
+                    //clear
+                    gotoXY(x, y);
+                    putchar(' ');
+                    cox.erase(cox.length() - 1);
+                    x--;
+                    pcox = x;
+                }
+                else if (t == 8 && x > 65 && x <= 67 && y == 42)
+                {
+                    //clear
+                    gotoXY(x, y);
+                    putchar(' ');
+                    coy.erase(coy.length() - 1);
+                    x--;
+                    pcoy = x;
+                }
             }
         }
-    }
 }
 
 vector<vector<int>> ClientGame::updatemap(string s)

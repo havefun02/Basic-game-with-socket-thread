@@ -1,5 +1,18 @@
 #include"Handle.h"
 
+
+bool Handler:: Finduserbyid(vector<PlayerAccount>& database, string id,PlayerAccount &t)
+{
+	for (int i = 0; i < database.size(); i++)
+	{
+		if (id == database[i].id()) {
+			t = database[i];
+			return 1;
+		}
+	}
+	return 0;
+}
+
 bool Handler::Closeconnect(vector<PlayerAccount>& database,string id)
 {
 	for (int i=0;i<database.size();i++)

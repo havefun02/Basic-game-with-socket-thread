@@ -13,4 +13,5 @@ public:
 	bool ListenChangeinfo(vector<PlayerAccount>&, string format);
 	void Writeoutdatabase(vector<PlayerAccount>);
 	string DatabaseToString(vector<PlayerAccount>);
+	bool Finduserbyid(vector<PlayerAccount>&,string id, PlayerAccount &t)
 };

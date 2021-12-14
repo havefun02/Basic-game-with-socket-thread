@@ -121,9 +121,34 @@ void ServerGame::receive()
 			}
 			else if (signal=="ConnectClient")
 			{
+				PlayerAccount t;
+				if (handler.Finduserbyid(network->database, content, t))
+				{
+					//send to another client
+					string tmp = "Join";
+					send(network->sessions[stoi(content)], tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+				}
 				while (1)
 				{
-					//
+					int brecv = recv(network->sessions[stoi(content)], buf, 100, 0);
+					string tmp = string(buf, 0, brecv);
+					if (tmp == "Yes")
+					{
+						tmp = "Yes";
+						send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+					}
+					else if (tmp == "No")
+					{
+						tmp = "No";
+						send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+					}
+
+					if (tmp == "Yes")
+					{
+
+					}
+
+					break;
 				}
 				//id of player choosen -> socket
 				//invite another to joint
