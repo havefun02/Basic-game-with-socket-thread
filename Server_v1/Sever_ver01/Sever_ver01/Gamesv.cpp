@@ -145,7 +145,92 @@ void ServerGame::receive()
 
 					if (tmp == "Yes")
 					{
+						//nhan map	
+						// network->map[0] : Client 1
+						// network->map[1] : Client 2
+						do
+						{
+							brecv = recv(network->sessions[stoi(content)], buf, 100, 0);
+							string line_map = string(buf, 0, brecv);
 
+							BattleShip mapClient;
+
+							if (mapClient.update(line_map)) {
+								mapClient.FillShip();
+							}
+
+							network->map.push_back(mapClient);
+
+						} while (network->map.size() >= 2);
+
+
+						if (network->map.size() >= 2) {
+							//send signal to show Gameplay UI to Client 1 <******************
+							//send signal to show Gameplay UI to Client 2 <******************
+						}
+
+						int playTime = 1;	//1 mean Client 1, 2 mean Client 2
+						tuple<bool, bool, string> result;
+						bool IsHit, IsFinish;
+						string message;
+						stringstream builder;
+						string signalGameplay;
+
+						// GAMEPLAY
+						while (1) {
+							int x, y;
+						
+							brecv = recv(network->sessions[stoi(content)], buf, 100, 0);
+							string attackSignal = string(buf, 0, brecv);
+							string resultMatrix;
+
+							//Ex : attackSignal = "atk:0506" 
+							x = BattleShip::convertToX(attackSignal);
+							y = BattleShip::convertToY(attackSignal);
+
+							if (playTime == 1) {
+								result = network->map[1].AttackShip(x, y);
+								playTime++;
+							}
+							else if (playTime == 2) {
+								result = network->map[0].AttackShip(x, y);
+								playTime = 1;
+							}
+
+							tie(IsHit, IsFinish, message) = result;
+
+							builder << "result:";
+
+							if (IsHit) {		// true mean the current Client who hit can continue playing
+								builder << 01;
+							}
+							else				// false mean the current Client who miss stop playing and
+							{					// the other Client can play now
+								builder << 00;
+							}
+
+							if (IsFinish) {		//Is the game done yet?
+								builder << 01;
+							}
+							else builder << 00;
+
+							//Ex : message = "Hit the ship 2x4\nthe ship is destroyed\nthere is no ships in map"
+							builder << message;
+
+							// THIS CURRENT SIGNAL DOES NOT INCLUDE THE INFORMATION OF CLIENT'S MAP
+							
+							signalGameplay = builder.str();
+
+							// Ex : SignalGameplay = "result:0100Hit the ship 2x4\nthe ship i......;0100011000...."
+
+							// send signalGameplay to Client 1	<******************
+							// send signalGameplay to Client 2	<******************
+
+							if (IsFinish) {
+								break;
+							}
+
+						}
 					}
 
 					break;

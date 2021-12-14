@@ -1,0 +1,33 @@
+﻿  BattleShip.cpp
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\BattleShip.h(7,9): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\BattleShip.cpp(543,46): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\BattleShip.cpp(577,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\BattleShip.cpp(586,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  EncryptAndDecryp.cpp
+  Gamesv.cpp
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\BattleShip.h(7,9): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Gamesv.cpp(35,41): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Gamesv.cpp(58,42): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Handler.cpp
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Handler.cpp(31,37): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Handler.cpp(49,37): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Handler.cpp(50,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Handler.cpp(51,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Handler.cpp(52,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Handler.cpp(53,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Handler.cpp(81,37): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Handler.cpp(82,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Handler.cpp(115,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Handler.cpp(116,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Handler.cpp(117,37): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Handler.cpp(118,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\Handler.cpp(119,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  main.cpp
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\BattleShip.h(7,9): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  Impl.cpp
+  PlayerAccount.cpp
+  Servernetwork.cpp
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\BattleShip.h(7,9): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  Generating Code...
+D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\Sever_ver01\BattleShip.cpp(79): warning C4715: 'BattleShip::update': not all control paths return a value
+  Sever_ver01.vcxproj -> D:\Visual Studio\Source code\abc\Server_v1\Sever_ver01\x64\Debug\Sever_ver01.exe

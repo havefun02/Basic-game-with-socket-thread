@@ -139,6 +139,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BattleShip.cpp" />
+    <ClCompile Include="EncryptAndDecryp.cpp" />
     <ClCompile Include="Gamesv.cpp" />
     <ClCompile Include="Handler.cpp" />
     <ClCompile Include="main.cpp" />
@@ -147,6 +149,8 @@
     <ClCompile Include="Servernetwork.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BattleShip.h" />
+    <ClInclude Include="EncryptAndDecryp.h" />
     <ClInclude Include="Gamesv.h" />
     <ClInclude Include="Handle.h" />
     <ClInclude Include="General.h" />

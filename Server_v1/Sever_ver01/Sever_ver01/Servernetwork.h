@@ -1,6 +1,7 @@
 #pragma once
 #include"General.h"
 #include"PlayerAccount.h"
+#include"BattleShip.h"
 class ServerNetwork {
 public:
 	ServerNetwork();
@@ -8,6 +9,7 @@ public:
 	void getInfosv(SOCKADDR_IN sv, int size);
 	void getInfoClient(SOCKADDR_IN cl, int size);
 	vector<PlayerAccount> database;
+	vector<BattleShip> map;
 	SOCKADDR_IN addrsv;
 	SOCKADDR_IN	addrcl;
 	SOCKET ListenSocket;

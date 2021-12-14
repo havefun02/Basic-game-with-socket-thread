@@ -33,6 +33,12 @@
     <ClCompile Include="Gamesv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BattleShip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EncryptAndDecryp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="General.h">
@@ -49,6 +55,12 @@
     </ClInclude>
     <ClInclude Include="Gamesv.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleShip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EncryptAndDecryp.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
