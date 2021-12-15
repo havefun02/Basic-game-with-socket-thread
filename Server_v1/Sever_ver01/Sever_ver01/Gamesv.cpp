@@ -11,11 +11,11 @@ void ServerGame::update()
 	if (network->acceptNewClient(client_id))
 	{
 		client_id++;
-		receive();
+		receive(client_id-1);
 	}
 }
 
-void ServerGame::receive()
+void ServerGame::receive(int idnet)
 {
 	while (1)
 	{
@@ -130,6 +130,7 @@ void ServerGame::receive()
 				}
 				while (1)
 				{
+					vector<BattleShip> map;
 					int brecv = recv(network->sessions[stoi(content)], buf, 100, 0);
 					string tmp = string(buf, 0, brecv);
 					if (tmp == "Yes")
@@ -159,44 +160,71 @@ void ServerGame::receive()
 								mapClient.FillShip();
 							}
 
-							network->map.push_back(mapClient);
+							map.push_back(mapClient);
 
-						} while (network->map.size() >= 2);
+						} while (map.size()<1);
+
+						do
+						{
+							brecv = recv(curclient, buf, 100, 0);
+							string line_map = string(buf, 0, brecv);
+
+							BattleShip mapClient;
+
+							if (mapClient.update(line_map)) {
+								mapClient.FillShip();
+							}
+
+							map.push_back(mapClient);
+
+						} while (map.size() < 2);
 
 
-						if (network->map.size() >= 2) {
+						if (map.size() >= 2) {
+							while (1) {
+								string tmp = "StartGame";
+								send(network->sessions[stoi(content)], tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+								send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+							}
 							//send signal to show Gameplay UI to Client 1 <******************
 							//send signal to show Gameplay UI to Client 2 <******************
 						}
-
-						int playTime = 1;	//1 mean Client 1, 2 mean Client 2
+						//1 mean Client 1, 2 mean Client 2
 						tuple<bool, bool, string> result;
 						bool IsHit, IsFinish;
 						string message;
 						stringstream builder;
 						string signalGameplay;
-
+						
+						
+						bool checkturn = 0;
 						// GAMEPLAY
 						while (1) {
+							//
+							string tmp = "Your turn!";
+							if (checkturn == 0) {
+								send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+								string tmp1 = "Wait!";
+								send(network->sessions[stoi(content)], tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+							}
+							else {
+								send(network->sessions[stoi(content)], tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+								string tmp1 = "Wait!";
+								send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+							}
+
 							int x, y;
-						
-							brecv = recv(network->sessions[stoi(content)], buf, 100, 0);
+							brecv = recv(curclient, buf, 100, 0);
 							string attackSignal = string(buf, 0, brecv);
 							string resultMatrix;
-
 							//Ex : attackSignal = "atk:0506" 
 							x = BattleShip::convertToX(attackSignal);
 							y = BattleShip::convertToY(attackSignal);
-
-							if (playTime == 1) {
-								result = network->map[1].AttackShip(x, y);
-								playTime++;
-							}
-							else if (playTime == 2) {
-								result = network->map[0].AttackShip(x, y);
-								playTime = 1;
-							}
-
+							//update map 2
+							result=map[1].AttackShip(x, y);
+							//check 
+							
+							//
 							tie(IsHit, IsFinish, message) = result;
 
 							builder << "result:";
@@ -205,15 +233,16 @@ void ServerGame::receive()
 								builder << 01;
 							}
 							else				// false mean the current Client who miss stop playing and
-							{					// the other Client can play now
+							{				
+								checkturn = !checkturn;// the other Client can play now
 								builder << 00;
 							}
 
+							
 							if (IsFinish) {		//Is the game done yet?
-								builder << 01;
+								builder << 01;//
 							}
-							else builder << 00;
-
+							else builder << 00;//
 							//Ex : message = "Hit the ship 2x4\nthe ship is destroyed\nthere is no ships in map"
 							builder << message;
 
@@ -238,11 +267,6 @@ void ServerGame::receive()
 				//id of player choosen -> socket
 				//invite another to joint
 				//return true if accept, false if refuse
-			}
-			else if (signal == "Attack")
-			{
-				
-
 			}
 			else if (signal == "Connect to sv")
 			{

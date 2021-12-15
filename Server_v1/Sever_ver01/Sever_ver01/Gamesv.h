@@ -9,7 +9,7 @@ public:
     ServerGame();
     void update();
 
-    void receive();
+    void receive(int idnet);
     ServerNetwork* network;
 private:
     static unsigned int client_id; 

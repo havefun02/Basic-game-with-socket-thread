@@ -63,13 +63,13 @@ vector<PlayerAccount*> ClientGame::getOnlinelist(string format)
     while (beginLine != format.size() - 1) {
         PlayerAccount* newClient = nullptr;
         line = format.substr(beginLine, semicolon - beginLine); //split format into a line
-        int comma = line.find_first_of(",");
-        int twoDots = line.find_first_of(":");
+        int comma = line.find_first_of(',' );
+        int twoDots = line.find_first_of(':');
         string temp = line.substr(twoDots + 1, comma - twoDots - 1); // id
 
         newClient->set_id(temp);
-        twoDots = line.find_first_of(":", comma);
-        comma = line.find_first_of(",", twoDots);
+        twoDots = line.find_first_of(':', comma);
+        comma = line.find_first_of(',', twoDots);
         temp = line.substr(twoDots + 1, comma - twoDots - 1); // name
         newClient->set_fullname(temp);
 
@@ -125,7 +125,10 @@ void ClientGame::UiClient()
                     send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                 }
             }
+            //first update map
+            //wait
             //send to play game
+
 
         }
 
