@@ -189,7 +189,6 @@ void ServerGame::receive(int idnet)
 							//send signal to show Gameplay UI to Client 1 <******************
 							//send signal to show Gameplay UI to Client 2 <******************
 						}
-						//1 mean Client 1, 2 mean Client 2
 						tuple<bool, bool, string> result;
 						bool IsHit, IsFinish;
 						string message;
@@ -197,7 +196,7 @@ void ServerGame::receive(int idnet)
 						string signalGameplay;
 						
 						
-						bool checkturn = 0;
+						bool checkturn = 0;	//0 -> Client 1, 1-> Client 2
 						// GAMEPLAY
 						while (1) {
 							//
@@ -214,46 +213,65 @@ void ServerGame::receive(int idnet)
 							}
 
 							int x, y;
-							brecv = recv(curclient, buf, 100, 0);
+
+							if (!checkturn) {
+								brecv = recv(curclient, buf, 100, 0);
+							}
+							else {
+								brecv = recv(network->sessions[stoi(content)], buf, 100, 0);
+							}
+							
 							string attackSignal = string(buf, 0, brecv);
-							string resultMatrix;
 							//Ex : attackSignal = "atk:0506" 
 							x = BattleShip::convertToX(attackSignal);
 							y = BattleShip::convertToY(attackSignal);
 							//update map 2
-							result=map[1].AttackShip(x, y);
-							//check 
+
+							if (!checkturn) {
+								result = map[1].AttackShip(x, y);
+							}
+							else {
+								result = map[0].AttackShip(x, y);
+							}
 							
 							//
 							tie(IsHit, IsFinish, message) = result;
 
 							builder << "result:";
 
-							if (IsHit) {		// true mean the current Client who hit can continue playing
+							if (IsHit) {				// true mean the current Client who hit can continue playing
 								builder << 01;
 							}
-							else				// false mean the current Client who miss stop playing and
+							else						// false mean the current Client who miss stop playing and
 							{				
 								checkturn = !checkturn;// the other Client can play now
 								builder << 00;
 							}
 
 							
-							if (IsFinish) {		//Is the game done yet?
-								builder << 01;//
+							if (IsFinish) {				//Is the game done yet?
+								builder << 01;
 							}
-							else builder << 00;//
+							else builder << 00;
+
 							//Ex : message = "Hit the ship 2x4\nthe ship is destroyed\nthere is no ships in map"
 							builder << message;
-
-							// THIS CURRENT SIGNAL DOES NOT INCLUDE THE INFORMATION OF CLIENT'S MAP
 							
+							// Ex : SignalGameplay = "result:0100Hit the ship 2x4\nthe ship i......"
 							signalGameplay = builder.str();
 
-							// Ex : SignalGameplay = "result:0100Hit the ship 2x4\nthe ship i......;0100011000...."
+							
+							send(network->sessions[stoi(content)], signalGameplay.c_str(), (int)strlen(signalGameplay.c_str()), 0);
+							send(curclient, signalGameplay.c_str(), (int)strlen(signalGameplay.c_str()), 0);
 
-							// send signalGameplay to Client 1	<******************
-							// send signalGameplay to Client 2	<******************
+
+							// send map information to 2 client
+							string resultMatrix1 = map[0].convertMap();			
+							string resultMatrix2 = map[1].convertMap();
+
+							// Ex: resultMatrix1 = "010000100100...."
+							send(curclient, resultMatrix1.c_str(), (int)strlen(resultMatrix1.c_str()), 0);
+							send(network->sessions[stoi(content)], resultMatrix2.c_str(), (int)strlen(resultMatrix2.c_str()), 0);
 
 							if (IsFinish) {
 								break;
