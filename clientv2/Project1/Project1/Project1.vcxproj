@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClCompile Include="ClientNetwork.cpp" />
     <ClCompile Include="console.cpp" />
+    <ClCompile Include="EncryptAndDecryp.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="GameClient.cpp" />
     <ClCompile Include="main.cpp" />
@@ -151,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="ClientNetwork.h" />
     <ClInclude Include="console.h" />
+    <ClInclude Include="EncryptAndDecryp.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="GameClient.h" />
     <ClInclude Include="NetworkService.h" />

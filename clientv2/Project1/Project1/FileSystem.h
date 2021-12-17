@@ -10,6 +10,7 @@ using namespace std;
 
 class FileSystem {
 public:
-	static bool ReadFileCSV(string filename, vector<vector<int>>_map); // read csv file and store them to _map, return true if it's successful or false if it fails
+	static string ReadFileCSV(string filename); // read csv file and return matrix line Ex: "010000100..."
+	static vector<vector<int>> LineToMatrix(string matrix);	// convert "010001000..." to matrix
 };
 
