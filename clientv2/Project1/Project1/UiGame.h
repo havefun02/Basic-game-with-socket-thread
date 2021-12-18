@@ -13,6 +13,7 @@ using namespace std;
 class Draw
 {
 public:
+	
 	void DrawMis();
 	void DrawShowWinner();
 	void DrawShowLoser();
@@ -52,6 +53,7 @@ class UI
 {
 public:
 	Draw draw;//interfac
+	void Showmap(string);
 	void setCheckuser();
 	void ShowforReadFile();
 	void ShowOnlinePlayer(vector<PlayerAccount*>);

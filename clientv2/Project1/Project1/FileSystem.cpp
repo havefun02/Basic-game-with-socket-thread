@@ -14,13 +14,14 @@ string FileSystem::ReadFileCSV(string filename) {
 	int i = 0;
 	while (!file.eof()) {
 		getline(file, line);
+		if (line == "")break;
 		if (!regex_match(line, ValidRow)) {	//checking valid line in .csv file, but work only for 10 numbers in a line	
 			cout << "the map file is invalid format (error at line " << i + 1 << ")" << endl;
 			file.close();
 			return "fail";
 		}
 
-		if (line == "")break; // reach end of file
+	 // reach end of file
 		
 		stringstream s(line);
 		while (getline(s, block, ',')) {

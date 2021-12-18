@@ -13,6 +13,22 @@ void UI::ShowOnlinePlayer(vector<PlayerAccount*> player)
 	cout << "BACK" << endl;
 }
 
+void UI::Showmap(string s)
+{
+	int inds = -1;
+	for (int i=0;i<10;i++)
+		for (int j = 0; j < 10; j++)
+		{
+			inds++;
+			gotoXY(62 + j * 4, 16 + i * 2);
+			if (s[inds] == '0')
+				putchar(' ');
+			else if (s[inds] == '1')
+				putchar('*');
+			else putchar('x');
+		}
+}
+
 void UI::ShowforReadFile()
 {
 	clrscr();
@@ -65,6 +81,9 @@ void Draw::Draw10x10()
 }
 void Draw::DrawControler()
 {
+	clrscr();
+	DrawOut();
+	Draw10x10();
 	for (int i = 41; i <= 129; i++)
 	{
 		gotoXY(i, 37);  putchar(196);
