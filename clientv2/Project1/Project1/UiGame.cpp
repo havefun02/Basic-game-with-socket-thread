@@ -4,6 +4,7 @@ void UI::ShowOnlinePlayer(vector<PlayerAccount*> player)
 {
 	clrscr();
 	draw.DrawOut();
+	cout << player.size();
 	for (int i = 0; i < player.size(); i++)
 	{
 		gotoXY(45, 22+i*2);

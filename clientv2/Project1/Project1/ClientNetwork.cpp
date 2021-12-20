@@ -2,7 +2,7 @@
 #include"NetworkService.h"
 void ClientNetwork::Connect()
 {
-	string ipAddress = "192.168.1.8";			// IP Address of the server
+	string ipAddress = "192.168.1.9";			// IP Address of the server
 	int port = 54000;						// Listening port # on the server
 
 	// Init

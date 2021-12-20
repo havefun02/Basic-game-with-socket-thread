@@ -39,10 +39,8 @@ void ClientGame::update()
         Register();
     if (_signal == "ChangePass")
         Changepass();
-     
     if (_signal == "ChangeInfor")
         Changeinfo();
-
     if (_signal == "UiClient")
         UiClient();
 }
@@ -128,173 +126,172 @@ void ClientGame::UiClient()
                     return;
                 }
             }
-        }
-        //first update map
-        ui.ShowforReadFile();
-        string smap;//map
-        string namef;
-        int x1 = 70, ix1 = 70;
-        while (1)
-        {
-            if (_kbhit())
-            {
-                char t = _getch();
-                if (t == 13)
-                {
-                    smap = FileSystem::ReadFileCSV(namef);
-                    break;
-                }
-                else if (t != 8 && x1 >= 70 && x1 < 117)
-                {
-                    //type id
-                    gotoXY(x1, 24);
-                    putchar(t);
-                    namef.push_back(t);
-                    x1++;
-                    ix1 = x1;
-                }
-                else if (t == 8 && x1 > 70 && x1 <= 117)
-                {
-                    //clear
-                    gotoXY(x1, 24);
-                    putchar(' ');
-                    namef.erase(namef.length() - 1);
-                    x1--;
-                    ix1 = x1;
-                }
-            }
-        }
-        send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
-
-        //wait
-        int data_length1 = 0;
-        while (data_length1 > 0)
-        {
-            network->Receive(network_data);
-            sig = string(network_data, 0, data_length1);
-        }
-        //send to play game
-        if (sig == "StartGame")
-        {
+            //first update map
+            ui.ShowforReadFile();
+            string smap;//map
+            string namef;
+            int x1 = 70, ix1 = 70;
             while (1)
             {
-                ui.draw.DrawControler();
-                ui.Showmap(smap);
+                if (_kbhit())
+                {
+                    char t = _getch();
+                    if (t == 13)
+                    {
+                        smap = FileSystem::ReadFileCSV(namef);
+                        break;
+                    }
+                    else if (t != 8 && x1 >= 70 && x1 < 117)
+                    {
+                        //type id
+                        gotoXY(x1, 24);
+                        putchar(t);
+                        namef.push_back(t);
+                        x1++;
+                        ix1 = x1;
+                    }
+                    else if (t == 8 && x1 > 70 && x1 <= 117)
+                    {
+                        //clear
+                        gotoXY(x1, 24);
+                        putchar(' ');
+                        namef.erase(namef.length() - 1);
+                        x1--;
+                        ix1 = x1;
+                    }
+                }
+            }
+            send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
+
+            //wait
+            int data_length1 = 0;
+            while (data_length1 > 0)
+            {
                 network->Receive(network_data);
                 sig = string(network_data, 0, data_length1);
-                if (sig == "Your turn!")
+            }
+            //send to play game
+            if (sig == "StartGame")
+            {
+                while (1)
                 {
-                    gotoXY(105, 40);
-                    cout << "Your turn";
-                    bool Checkid = true, Checkcurpass = false, Create = false;
-                    string Id = "", CurPass = "";
-                    int x = 65, y = 40, ix = x, pcx = x;
-                    gotoXY(37, 23); cout << ">>" << endl;
-                    while (1)
+                    ui.draw.DrawControler();
+                    ui.Showmap(smap);
+                    network->Receive(network_data);
+                    sig = string(network_data, 0, data_length1);
+                    if (sig == "Your turn!")
                     {
-                        if (y != 44) ui.cur(x, y);
-                        if (_kbhit())
+                        gotoXY(105, 40);
+                        cout << "Your turn";
+                        bool Checkid = true, Checkcurpass = false, Create = false;
+                        string Id = "", CurPass = "";
+                        int x = 65, y = 40, ix = x, pcx = x;
+                        gotoXY(37, 23); cout << ">>" << endl;
+                        while (1)
                         {
-                            char t = _getch();
-                            if (t == 9)
+                            if (y != 44) ui.cur(x, y);
+                            if (_kbhit())
                             {
-                                if (y == 40)
+                                char t = _getch();
+                                if (t == 9)
                                 {
-                                    Checkid = false;
-                                    x = pcx; y = 42;
-                                    gotoXY(37, 42);
-                                    cout << ">>" << endl;
-                                    gotoXY(37, 42);
-                                    cout << "  " << endl;
+                                    if (y == 40)
+                                    {
+                                        Checkid = false;
+                                        x = pcx; y = 42;
+                                        gotoXY(37, 42);
+                                        cout << ">>" << endl;
+                                        gotoXY(37, 42);
+                                        cout << "  " << endl;
+                                    }
+                                    else if (y == 42)
+                                    {
+                                        Checkcurpass = false;
+                                        y = 44;
+                                        gotoXY(37, 44);
+                                        cout << ">>" << endl;
+                                        gotoXY(37, 42);
+                                        cout << "  " << endl;
+                                    }
+                                    else if (y == 44)
+                                    {
+                                        Checkid = true;
+                                        x = ix; y = 40;
+                                        gotoXY(37, 40);
+                                        cout << ">>" << endl;
+                                        gotoXY(37, 44);
+                                        cout << "  " << endl;
+                                    }
+                                    continue;
                                 }
-                                else if (y == 42)
+                                else if (t != 8 && x >= 65 && x <= 117 && Checkcurpass)
                                 {
-                                    Checkcurpass = false;
-                                    y = 44;
-                                    gotoXY(37, 44);
-                                    cout << ">>" << endl;
-                                    gotoXY(37, 42);
-                                    cout << "  " << endl;
+                                    //type password
+                                    gotoXY(x, y);
+                                    CurPass.push_back(t);
+                                    putchar(t);
+                                    x++;
+                                    pcx = x;
                                 }
-                                else if (y == 44)
+                                else if (CurPass != "" && Id != "" && t == 13 && y == 44)
                                 {
-                                    Checkid = true;
-                                    x = ix; y = 40;
-                                    gotoXY(37, 40);
-                                    cout << ">>" << endl;
-                                    gotoXY(37, 44);
-                                    cout << "  " << endl;
+                                    //send to sv
+                                    if (stoi(Id) < 10)
+                                        Id = "0" + Id;
+                                    if (stoi(CurPass) < 10)
+                                        CurPass = "0" + CurPass;
+                                    string packet = "atk:" + Id + CurPass;
+                                    send(network->ClientSocket, packet.c_str(), (int)strlen(packet.c_str()), 0);
+                                    break;
                                 }
-                                continue;
-                            }
-                            else if (t != 8 && x >= 65 && x <= 117 && Checkcurpass)
-                            {
-                                //type password
-                                gotoXY(x, y);
-                                CurPass.push_back(t);
-                                putchar(t);
-                                x++;
-                                pcx = x;
-                            }
-                            else if (CurPass != "" && Id != "" && t == 13 && y == 44)
-                            {
-                                //send to sv
-                                if (stoi(Id) < 10)
-                                    Id = "0" + Id;
-                                if (stoi(CurPass) < 10)
-                                    CurPass = "0" + CurPass;
-                                string packet = "atk:" + Id + CurPass;
-                                send(network->ClientSocket, packet.c_str(), (int)strlen(packet.c_str()), 0);
-                                break;
-                            }
-                            else if (t != 8 && x >= 65 && x <= 117 && Checkid)
-                            {
-                                //type id
-                                gotoXY(x, y);
-                                putchar(t);
-                                Id.push_back(t);
-                                x++;
-                                ix = x;
-                            }
-                            else if (t == 8 && x > 65 && x <= 117 && Checkcurpass)
-                            {
-                                //clear
-                                gotoXY(x, y);
-                                putchar(' ');
-                                CurPass.erase(CurPass.length() - 1);
-                                x--;
-                                pcx = x;
-                            }
-                            else if (t == 8 && x > 65 && x <= 117 && Checkid)
-                            {
-                                gotoXY(x, y);
-                                putchar(' ');
-                                Id.erase(Id.length() - 1);
-                                x--;
-                                ix = x;
+                                else if (t != 8 && x >= 65 && x <= 117 && Checkid)
+                                {
+                                    //type id
+                                    gotoXY(x, y);
+                                    putchar(t);
+                                    Id.push_back(t);
+                                    x++;
+                                    ix = x;
+                                }
+                                else if (t == 8 && x > 65 && x <= 117 && Checkcurpass)
+                                {
+                                    //clear
+                                    gotoXY(x, y);
+                                    putchar(' ');
+                                    CurPass.erase(CurPass.length() - 1);
+                                    x--;
+                                    pcx = x;
+                                }
+                                else if (t == 8 && x > 65 && x <= 117 && Checkid)
+                                {
+                                    gotoXY(x, y);
+                                    putchar(' ');
+                                    Id.erase(Id.length() - 1);
+                                    x--;
+                                    ix = x;
+                                }
                             }
                         }
                     }
-                }
-                else if (sig == "Wait!")
-                {
-                    gotoXY(105, 40);
-                    cout << "Wait!";
-                }
-                else {
-                    setsignal("UiClient");
-                    return;
+                    else if (sig == "Wait!")
+                    {
+                        gotoXY(105, 40);
+                        cout << "Wait!";
+                    }
+                    else {
+                        setsignal("UiClient");
+                        return;
+                    }
                 }
             }
+            else
+            {
+                setsignal("UiClient");
+                return;
+            }
+
+
         }
-        else
-        {
-            setsignal("UiClient");
-            return;
-        }
-
-
-
         if (_kbhit())
         {
             char t = _getch();
