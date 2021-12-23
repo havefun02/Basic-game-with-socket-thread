@@ -8,9 +8,8 @@ ClientGame::ClientGame() {
 	network = new ClientNetwork();
     player = new PlayerAccount();
     setaccess(0);
-	const unsigned int size_packet = 1000;
-	char packet_data[1000] = "Connect to sv:";
-	NetworkService::sendMessage(network->ClientSocket, packet_data, size_packet);//init message
+	char packet_data[100] = "Connect to sv:";
+	NetworkService::sendMessage(network->ClientSocket, packet_data, strlen(packet_data));//init message
 }
 
 void ClientGame::Sendpacket(char*buffer)
