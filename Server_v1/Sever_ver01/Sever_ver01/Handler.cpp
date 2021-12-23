@@ -158,7 +158,7 @@ vector<PlayerAccount>Handler:: getdata()
 		getline(f, day, ',');
 		getline(f, month, ',');
 		getline(f, year, ',');
-		getline(f, point, ',');
+		getline(f, point);
 		if (username == "") break;
 		tmp.set_username(username);
 		tmp.set_password(password);
