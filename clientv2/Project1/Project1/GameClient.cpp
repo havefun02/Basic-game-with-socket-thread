@@ -8,7 +8,11 @@ ClientGame::ClientGame() {
 	network = new ClientNetwork();
     player = new PlayerAccount();
     setaccess(0);
+<<<<<<< HEAD
 	char packet_data[100] = "Connect to sv:";
+=======
+	char packet_data[1000] = "Connect to sv:";
+>>>>>>> 681e16e98392276264946253e0a4bdff64c7b2fe
 	NetworkService::sendMessage(network->ClientSocket, packet_data, strlen(packet_data));//init message
 }
 
@@ -50,7 +54,7 @@ vector<PlayerAccount*> ClientGame::getOnlinelist(string format)
     vector<PlayerAccount*> list;
     int beginLine = 0;
     int semicolon = format.find_first_of(";");
-    // "id:1,name:abc,point:13;id:2,name:abd,point:15;"
+    // "id:1,name:abc,point:13;id:2,name:abd,point:15;" 2 client
     string line;
 
     if (semicolon < 0) {
@@ -59,7 +63,7 @@ vector<PlayerAccount*> ClientGame::getOnlinelist(string format)
     }
 
     while (beginLine != format.size() - 1) {
-        PlayerAccount* newClient = nullptr;
+        PlayerAccount* newClient = new PlayerAccount();
         line = format.substr(beginLine, semicolon - beginLine); //split format into a line
         int comma = line.find_first_of(',' );
         int twoDots = line.find_first_of(':');
@@ -85,6 +89,8 @@ vector<PlayerAccount*> ClientGame::getOnlinelist(string format)
         semicolon = format.find_first_of(";", beginLine);
     }
 
+
+    //cout << "Finish getonline" << endl;
     return list;
 }
 
@@ -725,7 +731,7 @@ void ClientGame::Login()
                 {
                     int data;
                     string sig;
-                    string tmp = "Login:" + Id + "," + Pass+"."+player->id1();
+                    string tmp = "Login:" + Id + "," + Pass+"."+player->id();
                     clrscr();
                     while (1)
                     {
@@ -1543,10 +1549,14 @@ void ClientGame::Playgame() {
     send(network->ClientSocket, req, strlen(req), 0);
 
     int data = 0;
-    data = network->Receive(network_data);
-
+    while (data<=0)
+    {
+        data = network->Receive(network_data);
+        
+    }
+   
     string sig = string(network_data, 0, data);
-    Onlinelist = getOnlinelist(sig);
+    Onlinelist = getOnlinelist(sig);    //error att
     ui.ShowOnlinePlayer(Onlinelist);
     int x1 = 40, y1 = 22;
     if (data == 0)
@@ -1590,7 +1600,7 @@ void ClientGame::Playgame() {
             else if (t == 13)
             {
                 //send to sv
-                string re = "ConnectClient:" + Onlinelist[(y1 - 20) / 2]->id();
+                string re = "ConnectClient:" + Onlinelist[((y1 - 20) / 2)-1]->id();
                 send(network->ClientSocket, re.c_str(), strlen(re.c_str()), 0);
                 data = network->Receive(network_data);
                 sig = string(network_data, 0, data);
