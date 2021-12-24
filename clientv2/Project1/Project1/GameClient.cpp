@@ -8,11 +8,7 @@ ClientGame::ClientGame() {
 	network = new ClientNetwork();
     player = new PlayerAccount();
     setaccess(0);
-<<<<<<< HEAD
 	char packet_data[100] = "Connect to sv:";
-=======
-	char packet_data[1000] = "Connect to sv:";
->>>>>>> 681e16e98392276264946253e0a4bdff64c7b2fe
 	NetworkService::sendMessage(network->ClientSocket, packet_data, strlen(packet_data));//init message
 }
 
@@ -114,21 +110,23 @@ void ClientGame::UiClient()
             cout << "Someone invite you to play";
             gotoXY(40, 27);
             cout << "Enter to play";
-            while (_kbhit())
+            while (1)
             {
-                char t = _getch();
-                if (t == 13)
-                {
-                    //send to sv
-                    string tmp = "Yes";
-                    send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                }
-                else
-                {
-                    string tmp = "No";
-                    send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                    setsignal("UiClient");
-                    return;
+                if (_kbhit()) {
+                    char t = _getch();
+                    if (t == 13)
+                    {
+                        //send to sv
+                        string tmp = "Yes";
+                        send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                    }
+                    else
+                    {
+                        string tmp = "No";
+                        send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                        setsignal("UiClient");
+                        return;
+                    }
                 }
             }
             //first update map
@@ -1651,7 +1649,9 @@ void ClientGame::Playgame() {
             }
         }
     }
+    smap = "file:" + smap;
     send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
+
     //
     int data_length1 = 0;
     while (data_length1 > 0)
