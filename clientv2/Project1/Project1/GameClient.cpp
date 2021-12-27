@@ -100,10 +100,13 @@ void ClientGame::UiClient()
     gotoXY(40, 23); cout << ">>" << endl;
     while (1)
     {
+
         data_length = network->Receive(network_data);
         sig = string(network_data, 0, data_length);
+        string idplayer=sig.substr(5);
         if (data_length > 0 && sig == "Join")
         {
+
             clrscr();
             ui.draw.DrawOut();
             gotoXY(40, 25);
@@ -117,12 +120,12 @@ void ClientGame::UiClient()
                     if (t == 13)
                     {
                         //send to sv
-                        string tmp = "Yes";
+                        string tmp = "Yes:";
                         send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                     }
                     else
                     {
-                        string tmp = "No";
+                        string tmp = "No:";
                         send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                         setsignal("UiClient");
                         return;
@@ -164,6 +167,7 @@ void ClientGame::UiClient()
                     }
                 }
             }
+            smap = "File1:" + smap;
             send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
 
             //wait
@@ -174,8 +178,12 @@ void ClientGame::UiClient()
                 sig = string(network_data, 0, data_length1);
             }
             //send to play game
+
             if (sig == "StartGame")
             {
+                string tm = "Start:";
+                send(network->ClientSocket, tm.c_str(), (int)strlen(tm.c_str()), 0);
+
                 while (1)
                 {
                     ui.draw.DrawControler();
@@ -1649,7 +1657,7 @@ void ClientGame::Playgame() {
             }
         }
     }
-    smap = "file:" + smap;
+    smap = "File2:" + smap;
     send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
 
     //
@@ -1662,6 +1670,8 @@ void ClientGame::Playgame() {
     //send to play game
     if (sig == "StartGame")
     {
+        string tm = "Start:";
+        send(network->ClientSocket, tm.c_str(), (int)strlen(tm.c_str()), 0);
         while (1)
         {
             ui.draw.DrawControler();

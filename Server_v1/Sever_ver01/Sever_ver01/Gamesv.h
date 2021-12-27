@@ -8,7 +8,6 @@ public:
     Handler handler;
     ServerGame();
     void update();
-
     void receive(int idnet);
     ServerNetwork* network;
 private:

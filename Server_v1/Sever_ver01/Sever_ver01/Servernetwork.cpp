@@ -57,7 +57,8 @@ bool ServerNetwork::acceptNewClient(unsigned int& id)
         setsockopt( ClientSocket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof( value ) );
 
         // insert new client into session id table
-        sessions.insert( pair<unsigned int, SOCKET>(id, ClientSocket) );
+		BattleShip t;
+		sessions.insert({ id, { ClientSocket, t } });
         return true;
     }
     return false;

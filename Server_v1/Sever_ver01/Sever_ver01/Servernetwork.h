@@ -13,6 +13,6 @@ public:
 	SOCKADDR_IN	addrcl;
 	SOCKET ListenSocket;
 	SOCKET ClientSocket;
-	std::map<unsigned int, SOCKET> sessions;
+	std::map<unsigned int, pair<SOCKET, BattleShip>> sessions;
 
 };

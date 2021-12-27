@@ -9,4 +9,5 @@
 #include <thread>
 #pragma comment (lib,"WS2_32.lib")
 using namespace std;
+class ServerGame;
 void Runsv(void* arg);
