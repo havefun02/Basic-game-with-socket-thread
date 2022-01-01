@@ -128,7 +128,11 @@ void ServerGame::receive(int idnet)
 				if (handler.Finduserbyid(network->database, content, t))
 				{
 					//send to another client
+<<<<<<< HEAD
 					string tmp = "Join+" + to_string(idnet);
+=======
+					string tmp = "Join+" + to_string(idnet); 
+>>>>>>> 99246fea457fcfd46ec557554a53c5b692d81141
 					send(network->sessions[stoi(content)].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 				}
 			}
