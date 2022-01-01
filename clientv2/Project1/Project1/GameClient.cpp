@@ -104,6 +104,7 @@ void ClientGame::UiClient()
         data_length = network->Receive(network_data);
         sig = string(network_data, 0, data_length);
         string idplayer=sig.substr(5);
+        sig = sig.substr(0, 4);
         if (data_length > 0 && sig == "Join")
         {
 
@@ -122,6 +123,7 @@ void ClientGame::UiClient()
                         //send to sv
                         string tmp = "Yes:"+ idplayer;
                         send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                        break;
                     }
                     else
                     {
@@ -1610,11 +1612,20 @@ void ClientGame::Playgame() {
             else if (t == 13)
             {
                 //send to sv
+
+                int data1 = 0;
+                string sig1;
+
                 string re = "ConnectClient:" + Onlinelist[((y1 - 20) / 2)-1]->id();
                 send(network->ClientSocket, re.c_str(), strlen(re.c_str()), 0);
-                data = network->Receive(network_data);
-                sig = string(network_data, 0, data);
-                if (sig == "Yes")
+                while (1)
+                {
+                    data1 = network->Receive(network_data);
+                    sig1 = string(network_data, 0, data1);
+                    if (data1 > 0)break;
+                }
+
+                if (sig1 == "Yes")
                 {
                     break;
                 }

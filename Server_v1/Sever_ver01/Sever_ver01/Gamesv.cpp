@@ -128,7 +128,7 @@ void ServerGame::receive(int idnet)
 				if (handler.Finduserbyid(network->database, content, t))
 				{
 					//send to another client
-					string tmp = "Join+" + idnet;
+					string tmp = "Join+" + to_string(idnet); 
 					send(network->sessions[stoi(content)].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 				}
 			}
@@ -136,7 +136,7 @@ void ServerGame::receive(int idnet)
 			{
 				idc1 = content;
 				tmp = "Yes";
-				send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+				send(network->sessions[stoi(idc1)].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
 			else if (signal == "No") {
 				tmp = "No";
