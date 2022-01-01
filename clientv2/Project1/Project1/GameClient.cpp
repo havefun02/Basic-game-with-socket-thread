@@ -120,7 +120,7 @@ void ClientGame::UiClient()
                     if (t == 13)
                     {
                         //send to sv
-                        string tmp = "Yes:";
+                        string tmp = "Yes:"+ idplayer;
                         send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                     }
                     else
@@ -167,7 +167,7 @@ void ClientGame::UiClient()
                     }
                 }
             }
-            smap = "File1:" + smap;
+            smap = "File:" + smap;
             send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
 
             //wait
@@ -248,12 +248,14 @@ void ClientGame::UiClient()
                                 {
                                     //send to sv
                                     if (stoi(Id) < 10)
-                                        Id = "0" + Id;
+                                        Id = "0" + Id;//x
                                     if (stoi(CurPass) < 10)
-                                        CurPass = "0" + CurPass;
+                                        CurPass = "0" + CurPass;//y
                                     string packet = "atk:" + Id + CurPass;
                                     send(network->ClientSocket, packet.c_str(), (int)strlen(packet.c_str()), 0);
-                                    break;
+                                    network->Receive(network_data);
+                                    sig = string(network_data, 0, data_length1);
+                                    smap = sig;
                                 }
                                 else if (t != 8 && x >= 65 && x <= 117 && Checkid)
                                 {
@@ -287,7 +289,9 @@ void ClientGame::UiClient()
                     else if (sig == "Wait!")
                     {
                         gotoXY(105, 40);
-                        cout << "Wait!";
+                        cout << "                  ";
+                        gotoXY(105, 40);
+                        cout << "Wait";
                     }
                     else {
                         setsignal("UiClient");
@@ -1657,7 +1661,7 @@ void ClientGame::Playgame() {
             }
         }
     }
-    smap = "File2:" + smap;
+    smap = "File:" + smap;
     send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
 
     //
@@ -1741,7 +1745,10 @@ void ClientGame::Playgame() {
                                 CurPass = "0" + CurPass;
                             string packet = "atk:" + Id + CurPass;
                             send(network->ClientSocket, packet.c_str(), (int)strlen(packet.c_str()), 0);
-                            break;
+                            send(network->ClientSocket, packet.c_str(), (int)strlen(packet.c_str()), 0);
+                            network->Receive(network_data);
+                            sig = string(network_data, 0, data_length1);
+                            smap = sig;
                         }
                         else if (t != 8 && x >= 65 && x <= 117 && Checkid)
                         {
@@ -1775,7 +1782,9 @@ void ClientGame::Playgame() {
             else if (sig == "Wait!")
             {
                 gotoXY(105, 40);
-                cout << "Wait!";
+                cout << "                  ";
+                gotoXY(105, 40);
+                cout << "Wait";
             }
             else {
                 setsignal("UiClient");

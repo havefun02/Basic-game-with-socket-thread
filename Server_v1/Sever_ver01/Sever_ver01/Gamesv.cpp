@@ -19,6 +19,7 @@ void ServerGame::update()
 void ServerGame::receive(int idnet)
 {
 	string idc1;
+	bool checkturn = 0;
 	while (1)
 	{
 		char buf[100];
@@ -127,13 +128,12 @@ void ServerGame::receive(int idnet)
 				if (handler.Finduserbyid(network->database, content, t))
 				{
 					//send to another client
-					string tmp = "Join+"+idnet;
+					string tmp = "Join+" + idnet;
 					send(network->sessions[stoi(content)].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 				}
 			}
-			else if (signal == "Yes") {
-				int brecv = recv(network->sessions[stoi(content)].first, buf, 100, 0);
-				string tmp = string(buf, 0, brecv);
+			else if (signal == "Yes")
+			{
 				idc1 = network->sessions[stoi(content)].first;
 				tmp = "Yes";
 				send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
@@ -142,17 +142,17 @@ void ServerGame::receive(int idnet)
 				tmp = "No";
 				send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
-			else if (signal == "File1:")
-			{
-				BattleShip mapClient;
-				if (mapClient.update(content)) {
-					mapClient.FillShip();
-				}
-				network->sessions[stoi(idc1)].second = mapClient;
-				string tmp = "StartGame";
-				send(network->sessions[stoi(idc1)].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-			}
-			else if (signal == "File2:")
+			/*	else if (signal == "File1:")
+				{
+					BattleShip mapClient;
+					if (mapClient.update(content)) {
+						mapClient.FillShip();
+					}
+					network->sessions[stoi(idc1)].second = mapClient;
+					string tmp = "StartGame";
+					send(network->sessions[stoi(idc1)].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+				}*/
+			else if (signal == "File:")
 			{
 				BattleShip mapClient;
 				if (mapClient.update(content)) {
@@ -164,7 +164,50 @@ void ServerGame::receive(int idnet)
 			}
 			else if (signal == "Start")
 			{
-				run(network->sessions,idnet,stoi(idc1));
+				char buf[100];
+				string tmp = "Your turn!";
+				send(network->sessions[idnet].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+				string tmp1 = "Wait!";
+				send(network->sessions[stoi(idc1)].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+			}
+			else if (signal == "atk")
+			{
+
+				tuple<bool, bool, string> result;
+				int x, y;
+				bool IsHit, IsFinish;
+				string message;
+				string attackSignal = content;
+				x = BattleShip::convertToX(attackSignal);
+				y = BattleShip::convertToY(attackSignal);
+				result = network->sessions[stoi(idc1)].second.AttackShip(x, y);
+				tie(IsHit, IsFinish, message) = result;
+				string resultMatrix1 = network->sessions[stoi(idc1)].second.convertMap();
+				string resultMatrix2 = network->sessions[idnet].second.convertMap();
+				// Ex: resultMatrix1 = "010000100100...."
+				send(network->sessions[stoi(idc1)].first, resultMatrix1.c_str(), (int)strlen(resultMatrix1.c_str()), 0);
+				send(network->sessions[idnet].first, resultMatrix2.c_str(), (int)strlen(resultMatrix2.c_str()), 0);
+				if (IsHit) {				// true mean the current Client who hit can continue playing
+					string mes = "Your turn!";
+					send(network->sessions[idnet].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
+					mes = "Wait!";
+					send(network->sessions[stoi(idc1)].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
+				}
+				else						// false mean the current Client who miss stop playing and
+				{
+					string mes = "Your turn!";
+					send(network->sessions[stoi(idc1)].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
+					mes = "Wait!";
+					send(network->sessions[idnet].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
+				}
+
+
+				if (IsFinish) {				//Is the game done yet?
+					string mes = "Done";
+					send(network->sessions[idnet].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
+					send(network->sessions[stoi(idc1)].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
+					break;
+				}
 			}
 			else if (signal == "Connect to sv")
 			{
@@ -196,99 +239,6 @@ void ServerGame::receive(int idnet)
 				ExitThread(0);
 			}
 
-		}
-	}
-}
-
-void run(map<unsigned int, pair<SOCKET, BattleShip>> s,int id1,int id2)
-{
-	tuple<bool, bool, string> result;
-	bool IsHit, IsFinish;
-	string message;
-	stringstream builder;
-	
-	bool checkturn = 0;	//0 -> Client 1, 1-> Client 2
-	// GAMEPLAY
-	while (1)
-	{
-		//
-		int brecv;
-		char buf[100];
-		string tmp = "Your turn!";
-		if (checkturn == 0) {
-			send(s[id1].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-			string tmp1 = "Wait!";
-			send(s[id2].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-		}
-		else {
-			send(s[id2].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-			string tmp1 = "Wait!";
-			send(s[id1].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-		}
-
-		int x, y;
-
-		if (!checkturn) {
-			brecv = recv(s[id1].first, buf, 100, 0);
-		}
-		else {
-			brecv = recv(s[id2].first, buf, 100, 0);
-		}
-
-		string attackSignal = string(buf, 0, brecv);
-		//Ex : attackSignal = "atk:0506" 
-		x = BattleShip::convertToX(attackSignal);
-		y = BattleShip::convertToY(attackSignal);
-		//update map 2
-
-		if (!checkturn) {
-			result = s[id2].second.AttackShip(x, y);
-		}
-		else {
-			result = s[id1].second.AttackShip(x, y);
-		}
-
-		//
-		tie(IsHit, IsFinish, message) = result;
-
-		builder << "result:";
-
-		if (IsHit) {				// true mean the current Client who hit can continue playing
-			builder << 01;
-		}
-		else						// false mean the current Client who miss stop playing and
-		{
-			checkturn = !checkturn;// the other Client can play now
-			builder << 00;
-		}
-
-
-		if (IsFinish) {				//Is the game done yet?
-			builder << 01;
-		}
-		else builder << 00;
-
-		//Ex : message = "Hit the ship 2x4\nthe ship is destroyed\nthere is no ships in map"
-		builder << message;
-
-		// Ex : SignalGameplay = "result:0100Hit the ship 2x4\nthe ship i......"
-		string signalGameplay = builder.str();
-
-
-		send(s[id2].first, signalGameplay.c_str(), (int)strlen(signalGameplay.c_str()), 0);
-		send(s[id1].first, signalGameplay.c_str(), (int)strlen(signalGameplay.c_str()), 0);
-
-
-		// send map information to 2 client
-		string resultMatrix1 = s[id1].second.convertMap();
-		string resultMatrix2 = s[id2].second.convertMap();
-
-		// Ex: resultMatrix1 = "010000100100...."
-		send(s[id1].first, resultMatrix1.c_str(), (int)strlen(resultMatrix1.c_str()), 0);
-		send(s[id2].first, resultMatrix2.c_str(), (int)strlen(resultMatrix2.c_str()), 0);
-
-		if (IsFinish) {
-			break;
 		}
 	}
 }
