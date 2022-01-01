@@ -184,9 +184,6 @@ void ClientGame::UiClient()
 
             if (sig1 == "StartGame")
             {
-
-                cout << "play game now" << endl;
-                cin.get();
                /* string tm = "Start:";
                 send(network->ClientSocket, tm.c_str(), (int)strlen(tm.c_str()), 0);
                 */
@@ -194,9 +191,9 @@ void ClientGame::UiClient()
                 {
                     ui.draw.DrawControler();
                     ui.Showmap(smap);
-                    network->Receive(network_data);
-                    sig = string(network_data, 0, data_length1);
-                    if (sig == "Your turn!")
+                    int dt=network->Receive(network_data);
+                    string si = string(network_data, 0, dt);
+                    if (si == "Your turn!")
                     {
                         gotoXY(105, 40);
                         cout << "Your turn";
@@ -259,9 +256,9 @@ void ClientGame::UiClient()
                                         CurPass = "0" + CurPass;//y
                                     string packet = "atk:" + Id + CurPass;
                                     send(network->ClientSocket, packet.c_str(), (int)strlen(packet.c_str()), 0);
-                                    network->Receive(network_data);
-                                    sig = string(network_data, 0, data_length1);
-                                    smap = sig;
+                                    dt=network->Receive(network_data);
+                                    si = string(network_data, 0, dt);
+                                    smap = si;
                                 }
                                 else if (t != 8 && x >= 65 && x <= 117 && Checkid)
                                 {
@@ -292,7 +289,7 @@ void ClientGame::UiClient()
                             }
                         }
                     }
-                    else if (sig == "Wait!")
+                    else if (si == "Wait!")
                     {
                         gotoXY(105, 40);
                         cout << "                  ";
@@ -1645,7 +1642,7 @@ void ClientGame::Playgame() {
     ui.ShowforReadFile();
     string smap;//map
     string namef;
-    x1 = 75; int ix1 = 75;
+    x1 = 70; int ix1 = 70;
     while (1)
     {
         if (_kbhit())
@@ -1656,7 +1653,7 @@ void ClientGame::Playgame() {
                 smap = FileSystem::ReadFileCSV(namef);
                 break;
             }
-            else if (t != 8 && x1 >= 75 && x1 < 117)
+            else if (t != 8 && x1 >= 70 && x1 < 117)
             {
                 //type id
                 gotoXY(x1, 24);
@@ -1665,7 +1662,7 @@ void ClientGame::Playgame() {
                 x1++;
                 ix1 = x1;
             }
-            else if (t == 8 && x1 > 75 && x1 <= 117)
+            else if (t == 8 && x1 > 70 && x1 <= 117)
             {
                 //clear
                 gotoXY(x1, 24);
@@ -1681,10 +1678,12 @@ void ClientGame::Playgame() {
 
     //
     int data_length1 = 0;
-    while (data_length1 > 0)
+    while (1)
     {
-        network->Receive(network_data);
+        data_length1=network->Receive(network_data);
         sig = string(network_data, 0, data_length1);
+        if (data_length1 > 0)
+            break;
     }
     //send to play game
     if (sig == "StartGame")
@@ -1695,7 +1694,7 @@ void ClientGame::Playgame() {
         {
             ui.draw.DrawControler();
             ui.Showmap(smap);
-            network->Receive(network_data);
+            data_length1=network->Receive(network_data);
             sig = string(network_data, 0, data_length1);
             if (sig == "Your turn!")
             {
@@ -1760,8 +1759,7 @@ void ClientGame::Playgame() {
                                 CurPass = "0" + CurPass;
                             string packet = "atk:" + Id + CurPass;
                             send(network->ClientSocket, packet.c_str(), (int)strlen(packet.c_str()), 0);
-                            send(network->ClientSocket, packet.c_str(), (int)strlen(packet.c_str()), 0);
-                            network->Receive(network_data);
+                            data_length1=network->Receive(network_data);
                             sig = string(network_data, 0, data_length1);
                             smap = sig;
                         }
