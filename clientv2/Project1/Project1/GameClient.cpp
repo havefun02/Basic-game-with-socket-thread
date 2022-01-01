@@ -104,9 +104,9 @@ void ClientGame::UiClient()
         data_length = network->Receive(network_data);
         sig = string(network_data, 0, data_length);
         string idplayer=sig.substr(5);
+        sig = sig.substr(0, 4);
         if (data_length > 0 && sig == "Join")
         {
-
             clrscr();
             ui.draw.DrawOut();
             gotoXY(40, 25);
@@ -122,6 +122,7 @@ void ClientGame::UiClient()
                         //send to sv
                         string tmp = "Yes:"+ idplayer;
                         send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                        break;
                     }
                     else
                     {
@@ -147,7 +148,7 @@ void ClientGame::UiClient()
                         smap = FileSystem::ReadFileCSV(namef);
                         break;
                     }
-                    else if (t != 8 && x1 >= 70 && x1 < 117)
+                    else if (t != 8 && x1 >= 75 && x1 < 117)
                     {
                         //type id
                         gotoXY(x1, 24);
@@ -156,7 +157,7 @@ void ClientGame::UiClient()
                         x1++;
                         ix1 = x1;
                     }
-                    else if (t == 8 && x1 > 70 && x1 <= 117)
+                    else if (t == 8 && x1 > 75 && x1 <= 117)
                     {
                         //clear
                         gotoXY(x1, 24);
@@ -1630,7 +1631,7 @@ void ClientGame::Playgame() {
     ui.ShowforReadFile();
     string smap;//map
     string namef;
-    x1 = 70; int ix1 = 70;
+    x1 = 75; int ix1 = 75;
     while (1)
     {
         if (_kbhit())
@@ -1641,7 +1642,7 @@ void ClientGame::Playgame() {
                 smap = FileSystem::ReadFileCSV(namef);
                 break;
             }
-            else if (t != 8 && x1 >= 70 && x1 < 117)
+            else if (t != 8 && x1 >= 75 && x1 < 117)
             {
                 //type id
                 gotoXY(x1, 24);
@@ -1650,7 +1651,7 @@ void ClientGame::Playgame() {
                 x1++;
                 ix1 = x1;
             }
-            else if (t == 8 && x1 > 70 && x1 <= 117)
+            else if (t == 8 && x1 > 75 && x1 <= 117)
             {
                 //clear
                 gotoXY(x1, 24);
