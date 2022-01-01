@@ -148,7 +148,7 @@ void ClientGame::UiClient()
                         smap = FileSystem::ReadFileCSV(namef);
                         break;
                     }
-                    else if (t != 8 && x1 >= 75 && x1 < 117)
+                    else if (t != 8 && x1 >= 70 && x1 < 117)
                     {
                         //type id
                         gotoXY(x1, 24);
@@ -157,7 +157,7 @@ void ClientGame::UiClient()
                         x1++;
                         ix1 = x1;
                     }
-                    else if (t == 8 && x1 > 75 && x1 <= 117)
+                    else if (t == 8 && x1 > 70 && x1 <= 117)
                     {
                         //clear
                         gotoXY(x1, 24);
@@ -170,18 +170,23 @@ void ClientGame::UiClient()
             }
             smap = "File:" + smap;
             send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
+           
 
             //wait
             int data_length1 = 0;
-            while (data_length1 > 0)
+            string sig1;
+            do
             {
-                network->Receive(network_data);
-                sig = string(network_data, 0, data_length1);
-            }
+                data_length1 = network->Receive(network_data);
+                sig1 = string(network_data, 0, data_length1);
+            } while (data_length1 == 0);
             //send to play game
 
-            if (sig == "StartGame")
+            if (sig1 == "StartGame")
             {
+
+                cout << "play game now" << endl;
+                cin.get();
                /* string tm = "Start:";
                 send(network->ClientSocket, tm.c_str(), (int)strlen(tm.c_str()), 0);
                 */
