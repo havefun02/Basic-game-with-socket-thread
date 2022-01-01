@@ -134,7 +134,7 @@ void ServerGame::receive(int idnet)
 			}
 			else if (signal == "Yes")
 			{
-				idc1 = network->sessions[stoi(content)].first;
+				idc1 = content;
 				tmp = "Yes";
 				send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}

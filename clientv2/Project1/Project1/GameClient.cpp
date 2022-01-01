@@ -181,9 +181,9 @@ void ClientGame::UiClient()
 
             if (sig == "StartGame")
             {
-                string tm = "Start:";
+               /* string tm = "Start:";
                 send(network->ClientSocket, tm.c_str(), (int)strlen(tm.c_str()), 0);
-
+                */
                 while (1)
                 {
                     ui.draw.DrawControler();
