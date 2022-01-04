@@ -24,9 +24,9 @@ void UI::Showmap(string s)
 			gotoXY(62 + j * 4, 16 + i * 2);
 			if (s[inds] == '0')
 				putchar(' ');
-			else if (s[inds] == '1')
+			else if (s[inds] != '0')
 				putchar('*');
-			else putchar('x');
+			else if (s[inds] != '9')  putchar('x');
 		}
 }
 

@@ -137,7 +137,7 @@ void ClientGame::UiClient()
             ui.ShowforReadFile();
             string smap;//map
             string namef;
-            int x1 = 70, ix1 = 70;
+            int x1 = 75, ix1 = 75;
             while (1)
             {
                 if (_kbhit())
@@ -148,7 +148,7 @@ void ClientGame::UiClient()
                         smap = FileSystem::ReadFileCSV(namef);
                         break;
                     }
-                    else if (t != 8 && x1 >= 70 && x1 < 117)
+                    else if (t != 8 && x1 >= 75 && x1 < 117)
                     {
                         //type id
                         gotoXY(x1, 24);
@@ -157,7 +157,7 @@ void ClientGame::UiClient()
                         x1++;
                         ix1 = x1;
                     }
-                    else if (t == 8 && x1 > 70 && x1 <= 117)
+                    else if (t == 8 && x1 > 75 && x1 <= 117)
                     {
                         //clear
                         gotoXY(x1, 24);
@@ -184,9 +184,8 @@ void ClientGame::UiClient()
 
             if (sig1 == "StartGame")
             {
-               /* string tm = "Start:";
+                string tm = "Start1:";
                 send(network->ClientSocket, tm.c_str(), (int)strlen(tm.c_str()), 0);
-                */
                 while (1)
                 {
                     ui.draw.DrawControler();
@@ -1649,7 +1648,7 @@ void ClientGame::Playgame() {
     ui.ShowforReadFile();
     string smap;//map
     string namef;
-    x1 = 70; int ix1 = 70;
+    x1 = 75; int ix1 = 75;
     while (1)
     {
         if (_kbhit())
@@ -1660,7 +1659,7 @@ void ClientGame::Playgame() {
                 smap = FileSystem::ReadFileCSV(namef);
                 break;
             }
-            else if (t != 8 && x1 >= 70 && x1 < 117)
+            else if (t != 8 && x1 >= 75 && x1 < 117)
             {
                 //type id
                 gotoXY(x1, 24);
@@ -1669,7 +1668,7 @@ void ClientGame::Playgame() {
                 x1++;
                 ix1 = x1;
             }
-            else if (t == 8 && x1 > 70 && x1 <= 117)
+            else if (t == 8 && x1 > 75 && x1 <= 117)
             {
                 //clear
                 gotoXY(x1, 24);

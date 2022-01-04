@@ -38,7 +38,7 @@ void ServerGame::receive(int idnet)
 			int indexsig = tmp.find_first_of(":");
 			string signal = tmp.substr(0, indexsig);
 			string content = tmp.substr(indexsig + 1);
-			cout << "Message from client: " << " " << signal << endl;
+			cout << "Message from client: "<< signal << endl;
 			//check 
 			if (signal == "Find")
 			{
@@ -169,8 +169,12 @@ void ServerGame::receive(int idnet)
 				char buf[100];
 				string tmp = "Your turn!";
 				send(network->sessions[idnet].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-				tmp = "Wait!";
-				send(network->sessions[stoi(idc1)].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+			}
+			else if (signal == "Start1")
+			{
+				char buf[100];
+				string tmp = "Wait!";
+				send(network->sessions[idnet].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
 			else if (signal == "atk")
 			{
