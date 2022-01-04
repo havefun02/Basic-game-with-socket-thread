@@ -2,7 +2,7 @@
 #include"NetworkService.h"
 void ClientNetwork::Connect()
 {
-	string ipAddress = "192.168.1.9";			// IP Address of the server
+	string ipAddress = "192.168.1.13";			// IP Address of the server
 	int port = 54000;						// Listening port # on the server
 
 	// Init
@@ -51,7 +51,7 @@ ClientNetwork::ClientNetwork()
 
 int ClientNetwork::Receive(char* recvbuf)
 {
-	iResult = NetworkService::receiveMessage(ClientSocket, recvbuf, 100000);
+	iResult = NetworkService::receiveMessage(ClientSocket, recvbuf,100000);
 	//catch the packet
 	if (iResult == 0)
 	{

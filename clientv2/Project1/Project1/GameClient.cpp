@@ -175,11 +175,11 @@ void ClientGame::UiClient()
             //wait
             int data_length1 = 0;
             string sig1;
-            do
+            while (sig1!="StartGame")
             {
                 data_length1 = network->Receive(network_data);
                 sig1 = string(network_data, 0, data_length1);
-            } while (data_length1 == 0);
+            } 
             //send to play game
 
             if (sig1 == "StartGame")
@@ -191,8 +191,15 @@ void ClientGame::UiClient()
                 {
                     ui.draw.DrawControler();
                     ui.Showmap(smap);
-                    int dt=network->Receive(network_data);
-                    string si = string(network_data, 0, dt);
+                    int dt=0;
+                    string si;
+                    while (1)
+                    {
+                        dt = network->Receive(network_data);
+                        si = string(network_data, 0, dt);
+                        if (dt != 0)
+                            break;
+                    }
                     if (si == "Your turn!")
                     {
                         gotoXY(105, 40);
@@ -1678,12 +1685,10 @@ void ClientGame::Playgame() {
 
     //
     int data_length1 = 0;
-    while (1)
+    while (sig!="StartGame")
     {
         data_length1=network->Receive(network_data);
         sig = string(network_data, 0, data_length1);
-        if (data_length1 > 0)
-            break;
     }
     //send to play game
     if (sig == "StartGame")
@@ -1694,8 +1699,14 @@ void ClientGame::Playgame() {
         {
             ui.draw.DrawControler();
             ui.Showmap(smap);
-            data_length1=network->Receive(network_data);
-            sig = string(network_data, 0, data_length1);
+            data_length1 = 0;
+            while (1)
+            {
+                data_length1 = network->Receive(network_data);
+                sig = string(network_data, 0, data_length1);
+                if (data_length1 > 0)
+                    break;
+            }
             if (sig == "Your turn!")
             {
                 gotoXY(105, 40);
