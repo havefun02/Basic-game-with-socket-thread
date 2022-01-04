@@ -88,6 +88,7 @@ private:										// phuc vu cho cac ham public (k can dung vao)
 	bool PointInShip(int, int, Point, Point);
 	void DestroyShip(Point, Point);
 	bool CheckNumofShip();
+	bool OutOfBoder(int);
 public:
 	static int convertToX(string);
 	static int convertToY(string);

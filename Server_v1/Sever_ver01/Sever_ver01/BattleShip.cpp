@@ -154,12 +154,18 @@ tuple<Point, Point, bool, string> BattleShip::FindShip(int x, int y, int type, v
 		return result;
 	}
 	else if (type == 2) {
-		if (_map[x][y + 1] && !visited[x][y + 1]) {
-			end.setX(x); end.setY(y + 1);
+		if (!OutOfBoder(y + 1)) {
+			if (_map[x][y + 1] && !visited[x][y + 1]) {
+				end.setX(x); end.setY(y + 1);
+			}
+			else if (_map[x + 1][y] && !visited[x + 1][y]) {
+				end.setX(x + 1); end.setY(y);
+			}
 		}
-		else if (_map[x + 1][y] && !visited[x + 1][y]) {
+		else {
 			end.setX(x + 1); end.setY(y);
 		}
+
 
 		if (!CanShipPlaceHere(start, end, 2, visited)) {
 			error << "Can not place ship here # error at (" << start.x() << "," << start.y() << ")";
@@ -170,12 +176,18 @@ tuple<Point, Point, bool, string> BattleShip::FindShip(int x, int y, int type, v
 
 	}
 	else if (type == 3) {
-		if (_map[x][y + 1] && !visited[x][y + 1]) {
-			end.setX(x); end.setY(y + 3);
+		if (!OutOfBoder(y + 1)) {
+			if (_map[x][y + 1] && !visited[x][y + 1]) {
+				end.setX(x); end.setY(y + 3);
+			}
+			else if (_map[x + 1][y] && !visited[x + 1][y]) {
+				end.setX(x + 3); end.setY(y);
+			}
 		}
-		else if (_map[x + 1][y] && !visited[x + 1][y]) {
+		else {
 			end.setX(x + 3); end.setY(y);
 		}
+
 		//error
 
 		if (!CanShipPlaceHere(start, end, 3, visited)) {
@@ -188,12 +200,18 @@ tuple<Point, Point, bool, string> BattleShip::FindShip(int x, int y, int type, v
 
 	}
 	else if (type == 4) {
-		if (_map[x][y + 2] && !visited[x][y + 2]) { //horizonatlly
-			end.setX(x + 1); end.setY(y + 4);
+		if (!OutOfBoder(y + 2)) {
+			if (_map[x][y + 2] && !visited[x][y + 2]) { //horizonatlly
+				end.setX(x + 1); end.setY(y + 4);
+			}
+			else if (_map[x + 2][y] && !visited[x + 2][y]) {
+				end.setX(x + 4); end.setY(y + 1);
+			}
 		}
-		else if (_map[x + 2][y] && !visited[x + 2][y]) {
+		else {
 			end.setX(x + 4); end.setY(y + 1);
 		}
+
 
 		if (!CanShipPlaceHere(start, end, 4, visited)) {
 			error << "Can not place ship here # error at (" << start.x() << "," << start.y() << ")";
@@ -204,12 +222,18 @@ tuple<Point, Point, bool, string> BattleShip::FindShip(int x, int y, int type, v
 
 	}
 	else if (type == 5) {
-		if (_map[x][y + 2] && !visited[x][y + 2]) { //horizonatlly
-			end.setX(x + 1); end.setY(y + 6);
+		if (!OutOfBoder(y + 2)) {
+			if (_map[x][y + 2] && !visited[x][y + 2]) { //horizonatlly
+				end.setX(x + 1); end.setY(y + 6);
+			}
+			else if (_map[x + 2][y] && !visited[x + 2][y]) {
+				end.setX(x + 6); end.setY(y + 1);
+			}
 		}
-		else if (_map[x + 2][y] && !visited[x + 2][y]) {
+		else {
 			end.setX(x + 6); end.setY(y + 1);
 		}
+
 
 		if (!CanShipPlaceHere(start, end, 5, visited)) {
 			error << "Can not place ship here # error at (" << start.x() << "," << start.y() << ")";
@@ -226,6 +250,11 @@ tuple<Point, Point, bool, string> BattleShip::FindShip(int x, int y, int type, v
 }
 
 bool BattleShip::CanShipPlaceHere(Point start, Point end, int type, vector < vector<bool>> visited) {
+	if (start.x() >= n || start.y() >= n || end.x() >= n || end.y() >= n) {
+		return false;
+	}
+
+
 	if (type == 1) {
 		return !visited[start.x()][start.y()];
 	}
@@ -305,6 +334,10 @@ void BattleShip::Visit(Point start, Point end, vector < vector<bool>>& visited) 
 		}
 		x++;
 	}
+}
+
+bool BattleShip::OutOfBoder(int x) {
+	return x >= n;
 }
 #pragma endregion Set up
 
@@ -572,7 +605,7 @@ int ShipManager::typeToHp(int type) {
 // convert signal
 
 // Example :  signal = "atk:0506"  --> x = 5, y = 6
-int BattleShip::convertToX(string signal) {		
+int BattleShip::convertToX(string signal) {
 	int x = 0;
 	int twoDot = signal.find_first_of(":");
 
