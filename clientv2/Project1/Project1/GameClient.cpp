@@ -296,7 +296,7 @@ void ClientGame::UiClient()
                         gotoXY(105, 40);
                         cout << "Wait";
                     }
-                    else {
+                    else if (si=="Done"){
                         setsignal("UiClient");
                         return;
                     }
@@ -1630,7 +1630,7 @@ void ClientGame::Playgame() {
                 {
                     break;
                 }
-                else 
+                else
                 {
                     setsignal("UiClient");
                     return;
@@ -1799,7 +1799,7 @@ void ClientGame::Playgame() {
                 gotoXY(105, 40);
                 cout << "Wait";
             }
-            else {
+            else if (sig=="Done") {
                 setsignal("UiClient");
                 return;
             }
