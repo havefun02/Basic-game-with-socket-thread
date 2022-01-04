@@ -168,7 +168,7 @@ void ClientGame::UiClient()
                     }
                 }
             }
-            smap = "File:" + smap;
+            smap = "File1:" + smap;
             send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
            
 

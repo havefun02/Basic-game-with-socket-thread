@@ -164,6 +164,16 @@ void ServerGame::receive(int idnet)
 				string tmp = "StartGame";
 				send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
+			else if (signal == "File1")
+			{
+				BattleShip mapClient;
+				if (mapClient.update(content)) {
+					mapClient.FillShip();
+				}
+				network->sessions[idnet].second = mapClient;
+				string tmp = "StartGame";
+				send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+			}
 			else if (signal == "Start")
 			{
 				char buf[100];
