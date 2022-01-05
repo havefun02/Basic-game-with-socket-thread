@@ -12,6 +12,7 @@ void ServerGame::update()
 	if (network->acceptNewClient(client_id))
 	{
 		client_id++;
+		cout << "update()"<< client_id << endl;
 		receive(client_id-1);
 	}
 }
@@ -20,13 +21,14 @@ void ServerGame::receive(int idnet)
 {
 	string idc1;
 	bool checkturn = 0;
+	cout << "receive: " << idnet << endl;
 	while (1)
 	{
-		char buf[100];
+		char buf[200];
 		bool check = false;
-		ZeroMemory(buf, 100);
+		ZeroMemory(buf, 200);
 		SOCKET curclient = (SOCKET)network->ClientSocket;
-		int brecv = recv(curclient, buf, 100, 0);
+		int brecv = recv(curclient, buf, 1000, 0);
 		if (brecv == SOCKET_ERROR)
 		{
 			cout << "error occur " << WSAGetLastError() << endl;
@@ -38,7 +40,8 @@ void ServerGame::receive(int idnet)
 			int indexsig = tmp.find_first_of(":");
 			string signal = tmp.substr(0, indexsig);
 			string content = tmp.substr(indexsig + 1);
-			cout << "Message from client: "<< signal << endl;
+			cout << "Wait for client!" << endl;
+			cout << "Message from client: " << idnet <<" : " << signal << endl;
 			//check 
 			if (signal == "Find")
 			{
