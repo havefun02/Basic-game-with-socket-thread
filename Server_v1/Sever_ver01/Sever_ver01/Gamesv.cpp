@@ -19,7 +19,6 @@ void ServerGame::update()
 void ServerGame::receive(int idnet)
 {
 	string idc1;
-	bool checkturn = 0;
 	while (1)
 	{
 		char buf[100];
@@ -195,7 +194,7 @@ void ServerGame::receive(int idnet)
 				string message;
 				string attackSignal = content;
 				x = BattleShip::convertToX(attackSignal);
-				y = BattleShip::convertToY(attackSignal);
+				y = BattleShip::convertToX(attackSignal);
 				result = network->sessions[stoi(idc1)].second.AttackShip(x, y);
 				tie(IsHit, IsFinish, message) = result;
 				string resultMatrix1 = network->sessions[stoi(idc1)].second.convertMap();
