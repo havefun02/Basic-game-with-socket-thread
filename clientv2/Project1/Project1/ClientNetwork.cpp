@@ -3,7 +3,7 @@
 void ClientNetwork::Connect()
 {
 	string ipAddress = "192.168.1.13";			// IP Address of the server
-	int port = 54000;						// Listening port # on the server
+	int port = 8080;						// Listening port # on the server
 
 	// Init
 	WSADATA data;

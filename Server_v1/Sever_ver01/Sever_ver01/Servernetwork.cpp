@@ -22,7 +22,7 @@ ServerNetwork::ServerNetwork()
 	}
 	// bind the ip addr and port to sk
 	addrsv.sin_family = AF_INET;
-	addrsv.sin_port = htons(54000);
+	addrsv.sin_port = htons(8080);
 	addrsv.sin_addr.S_un.S_addr = INADDR_ANY;
 	int r = bind(ListenSocket, (sockaddr*)&addrsv, sizeof(addrsv)); //associates a local address with a socket.
 	if (r == SOCKET_ERROR)
