@@ -8,7 +8,7 @@ ClientGame::ClientGame() {
 	network = new ClientNetwork();
     player = new PlayerAccount();
     setaccess(0);
-	char packet_data[100] = "Connect to sv:";
+	char packet_data[1024] = "Connect to sv:";
 	NetworkService::sendMessage(network->ClientSocket, packet_data, strlen(packet_data));//init message
 }
 

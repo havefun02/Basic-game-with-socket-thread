@@ -24,11 +24,11 @@ void ServerGame::receive(int idnet)
 	cout << "receive: " << idnet << endl;
 	while (1)
 	{
-		char buf[200];
+		char buf[1024];
 		bool check = false;
-		ZeroMemory(buf, 200);
-		SOCKET curclient = (SOCKET)network->ClientSocket;
-		int brecv = recv(curclient, buf, 1000, 0);
+		ZeroMemory(buf, 1024);
+		SOCKET curclient = (SOCKET)network->sessions[idnet].first;
+		int brecv = recv(curclient, buf, 1024, 0);
 		if (brecv == SOCKET_ERROR)
 		{
 			cout << "error occur " << WSAGetLastError() << endl;
@@ -179,13 +179,13 @@ void ServerGame::receive(int idnet)
 			}
 			else if (signal == "Start")
 			{
-				char buf[100];
+				char buf[1024];
 				string tmp = "Your turn!";
 				send(network->sessions[idnet].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
 			else if (signal == "Start1")
 			{
-				char buf[100];
+				char buf[1024];
 				string tmp = "Wait!";
 				send(network->sessions[idnet].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}

@@ -14,7 +14,7 @@ public:
 	UI ui;
 	ClientNetwork* network;
 	PlayerAccount *player;
-	char network_data[1000];
+	char network_data[1024];
 	vector<vector<int>> map;
 	vector<vector<int>> updatemap(string);
 
