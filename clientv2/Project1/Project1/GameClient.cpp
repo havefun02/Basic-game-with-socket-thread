@@ -201,6 +201,7 @@ void ClientGame::UiClient()
                         else {
                             gotoXY(105, 40);
                             cout << "                  ";
+                            Sleep(100);
                             gotoXY(105, 40);
                             cout << "Wait";
                         }
@@ -228,7 +229,7 @@ void ClientGame::UiClient()
                                         x = pcx; y = 42;
                                         gotoXY(37, 42);
                                         cout << ">>" << endl;
-                                        gotoXY(37, 42);
+                                        gotoXY(37, 40);
                                         cout << "  " << endl;
                                     }
                                     else if (y == 42)
@@ -251,7 +252,7 @@ void ClientGame::UiClient()
                                     }
                                     continue;
                                 }
-                                else if (t != 8 && x >= 65 && x <= 117 && Checkcurpass)
+                                else if (t != 8 && x >= 65 && x <= 117 && Checkcurpass&& y==40)
                                 {
                                     //type password
                                     gotoXY(x, y);
@@ -273,7 +274,7 @@ void ClientGame::UiClient()
                                     si = string(network_data, 0, dt);
                                     smap = si;
                                 }
-                                else if (t != 8 && x >= 65 && x <= 117 && Checkid)
+                                else if (t != 8 && x >= 65 && x <= 117 && Checkid && y==42)
                                 {
                                     //type id
                                     gotoXY(x, y);
@@ -1720,6 +1721,7 @@ void ClientGame::Playgame() {
                 {
                     gotoXY(105, 40);
                     cout << "                  ";
+                    Sleep(100);
                     gotoXY(105, 40);
                     cout << "Wait";
                 }
@@ -1747,7 +1749,7 @@ void ClientGame::Playgame() {
                                 x = pcx; y = 42;
                                 gotoXY(37, 42);
                                 cout << ">>" << endl;
-                                gotoXY(37, 42);
+                                gotoXY(37, 40);
                                 cout << "  " << endl;
                             }
                             else if (y == 42)
@@ -1770,7 +1772,7 @@ void ClientGame::Playgame() {
                             }
                             continue;
                         }
-                        else if (t != 8 && x >= 65 && x <= 117 && Checkcurpass)
+                        else if (t != 8 && x >= 65 && x <= 117 && Checkcurpass && y==40)
                         {
                             //type password
                             gotoXY(x, y);
@@ -1792,7 +1794,7 @@ void ClientGame::Playgame() {
                             sig = string(network_data, 0, data_length1);
                             smap = sig;
                         }
-                        else if (t != 8 && x >= 65 && x <= 117 && Checkid)
+                        else if (t != 8 && x >= 65 && x <= 117 && Checkid && y==42)
                         {
                             //type id
                             gotoXY(x, y);
