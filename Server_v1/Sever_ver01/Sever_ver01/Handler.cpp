@@ -196,10 +196,10 @@ void Handler::Writeoutdatabase(vector<PlayerAccount> database)
 }
 
 
-string Handler::DatabaseToString(vector<PlayerAccount> database) {
+string Handler::DatabaseToString(vector<PlayerAccount> database,int id) {
 	stringstream result;
 	for (int i = 0; i < database.size(); i++){
-		if (database[i].IsOnline()) {
+		if (database[i].IsOnline() && database[i].id()!=to_string(id)) {
 			result << "id:" << database[i].id() << ","
 				<< "name:" << database[i].fullname() << ","
 				<< "point:" << database[i].point() << ";";

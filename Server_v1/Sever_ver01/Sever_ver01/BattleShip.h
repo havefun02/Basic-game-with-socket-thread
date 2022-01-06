@@ -94,6 +94,3 @@ public:
 	static int convertToY(string);
 };
 
-
-
-

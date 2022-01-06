@@ -168,7 +168,7 @@ void ClientGame::UiClient()
                     }
                 }
             }
-            smap = "File1:" + smap;
+            smap = "File:" + smap;
             send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
            
 
@@ -196,8 +196,15 @@ void ClientGame::UiClient()
                     {
                         dt = network->Receive(network_data);
                         si = string(network_data, 0, dt);
-                        if (dt != 0)
+                        if (si == "Your turn!")
                             break;
+                        else {
+                            gotoXY(105, 40);
+                            cout << "                  ";
+                            gotoXY(105, 40);
+                            cout << "Wait";
+                        }
+                            
                     }
                     if (si == "Your turn!")
                     {
@@ -206,7 +213,7 @@ void ClientGame::UiClient()
                         bool Checkid = true, Checkcurpass = false, Create = false;
                         string Id = "", CurPass = "";
                         int x = 65, y = 40, ix = x, pcx = x;
-                        gotoXY(37, 23); cout << ">>" << endl;
+                        gotoXY(37, 40); cout << ">>" << endl;
                         while (1)
                         {
                             if (y != 44) ui.cur(x, y);
@@ -295,14 +302,17 @@ void ClientGame::UiClient()
                             }
                         }
                     }
-                    else if (si == "Wait!")
-                    {
+                    else if (si=="Win"){
                         gotoXY(105, 40);
-                        cout << "                  ";
-                        gotoXY(105, 40);
-                        cout << "Wait";
+                        cout << "You Win";
+                        Sleep(500);
+                        setsignal("UiClient");
+                        return;
                     }
-                    else if (si=="Done"){
+                    else if (si == "Lose") {
+                        gotoXY(105, 40);
+                        cout << "You lose";
+                        Sleep(500);
                         setsignal("UiClient");
                         return;
                     }
@@ -1694,6 +1704,7 @@ void ClientGame::Playgame() {
     {
         string tm = "Start:";
         send(network->ClientSocket, tm.c_str(), (int)strlen(tm.c_str()), 0);
+       
         while (1)
         {
             ui.draw.DrawControler();
@@ -1703,8 +1714,16 @@ void ClientGame::Playgame() {
             {
                 data_length1 = network->Receive(network_data);
                 sig = string(network_data, 0, data_length1);
-                if (data_length1 > 0)
+                if (sig == "Your turn!")
                     break;
+                else
+                {
+                    gotoXY(105, 40);
+                    cout << "                  ";
+                    gotoXY(105, 40);
+                    cout << "Wait";
+                }
+
             }
             if (sig == "Your turn!")
             {
@@ -1713,7 +1732,7 @@ void ClientGame::Playgame() {
                 bool Checkid = true, Checkcurpass = false, Create = false;
                 string Id = "", CurPass = "";
                 int x = 65, y = 40, ix = x, pcx = x;
-                gotoXY(37, 23); cout << ">>" << endl;
+                gotoXY(37, 40); cout << ">>" << endl;
                 while (1)
                 {
                     if (y != 44) ui.cur(x, y);
@@ -1802,14 +1821,17 @@ void ClientGame::Playgame() {
                     }
                 }
             }
-            else if (sig == "Wait!")
-            {
+            else if (sig == "Win") {
                 gotoXY(105, 40);
-                cout << "                  ";
-                gotoXY(105, 40);
-                cout << "Wait";
+                cout << "You Win";
+                Sleep(500);
+                setsignal("UiClient");
+                return;
             }
-            else if (sig=="Done") {
+            else if (sig == "Lose") {
+                gotoXY(105, 40);
+                cout << "You lose";
+                Sleep(500);
                 setsignal("UiClient");
                 return;
             }

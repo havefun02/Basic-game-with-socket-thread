@@ -122,7 +122,7 @@ void ServerGame::receive(int idnet)
 			else if (signal == "ListOnline")
 			{
 				//return the list player online
-				string tmp = handler.DatabaseToString(network->database);
+				string tmp = handler.DatabaseToString(network->database,idnet);
 				send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
 			else if (signal == "ConnectClient")
@@ -167,16 +167,6 @@ void ServerGame::receive(int idnet)
 				string tmp = "StartGame";
 				send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
-			else if (signal == "File1")
-			{
-				BattleShip mapClient;
-				if (mapClient.update(content)) {
-					mapClient.FillShip();
-				}
-				network->sessions[idnet].second = mapClient;
-				string tmp = "StartGame";
-				send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-			}
 			else if (signal == "Start")
 			{
 				char buf[1024];
@@ -198,7 +188,7 @@ void ServerGame::receive(int idnet)
 				string message;
 				string attackSignal = content;
 				x = BattleShip::convertToX(attackSignal);
-				y = BattleShip::convertToX(attackSignal);
+				y = BattleShip::convertToY(attackSignal);
 				result = network->sessions[stoi(idc1)].second.AttackShip(x, y);
 				tie(IsHit, IsFinish, message) = result;
 				string resultMatrix1 = network->sessions[stoi(idc1)].second.convertMap();
@@ -222,10 +212,10 @@ void ServerGame::receive(int idnet)
 
 
 				if (IsFinish) {				//Is the game done yet?
-					string mes = "Done";
+					string mes = "Win";
 					send(network->sessions[idnet].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
+					mes = "Lose";
 					send(network->sessions[stoi(idc1)].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
-					break;
 				}
 			}
 			else if (signal == "Connect to sv")
