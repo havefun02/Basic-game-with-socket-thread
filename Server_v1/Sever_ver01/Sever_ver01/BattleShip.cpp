@@ -154,7 +154,7 @@ tuple<Point, Point, bool, string> BattleShip::FindShip(int x, int y, int type, v
 		return result;
 	}
 	else if (type == 2) {
-		if (!OutOfBoder(y + 1)) {
+		if (!OutOfBorder(y + 1)) {
 			if (_map[x][y + 1] && !visited[x][y + 1]) {
 				end.setX(x); end.setY(y + 1);
 			}
@@ -176,7 +176,7 @@ tuple<Point, Point, bool, string> BattleShip::FindShip(int x, int y, int type, v
 
 	}
 	else if (type == 3) {
-		if (!OutOfBoder(y + 1)) {
+		if (!OutOfBorder(y + 1)) {
 			if (_map[x][y + 1] && !visited[x][y + 1]) {
 				end.setX(x); end.setY(y + 3);
 			}
@@ -200,7 +200,7 @@ tuple<Point, Point, bool, string> BattleShip::FindShip(int x, int y, int type, v
 
 	}
 	else if (type == 4) {
-		if (!OutOfBoder(y + 2)) {
+		if (!OutOfBorder(y + 2)) {
 			if (_map[x][y + 2] && !visited[x][y + 2]) { //horizonatlly
 				end.setX(x + 1); end.setY(y + 4);
 			}
@@ -222,7 +222,7 @@ tuple<Point, Point, bool, string> BattleShip::FindShip(int x, int y, int type, v
 
 	}
 	else if (type == 5) {
-		if (!OutOfBoder(y + 2)) {
+		if (!OutOfBorder(y + 2)) {
 			if (_map[x][y + 2] && !visited[x][y + 2]) { //horizonatlly
 				end.setX(x + 1); end.setY(y + 6);
 			}
@@ -336,7 +336,7 @@ void BattleShip::Visit(Point start, Point end, vector < vector<bool>>& visited) 
 	}
 }
 
-bool BattleShip::OutOfBoder(int x) {
+bool BattleShip::OutOfBorder(int x) {
 	return x >= n;
 }
 #pragma endregion Set up
@@ -345,21 +345,22 @@ bool BattleShip::OutOfBoder(int x) {
 tuple<bool, bool, string> BattleShip::AttackShip(int x, int y) {
 	tuple<bool, bool, string> result;
 	bool Finish = false;
-	if (_map[x][y] <= 0) {
+	if (_map[x][y] <= 0 || _map[x][y] == 9) {
 		result = make_tuple(false, Finish, "Missed");
 		return result;
 	}
 
 	//hit
 	for (int i = 0; i < _Ship[_map[x][y] - 1].size(); i++) {
-		Ship temp = _Ship[_map[x][y] - 1].GetShip(i);
-		if (PointInShip(x, y, temp.startPoint(), temp.endPoint())) {
+		Ship* temp = _Ship[_map[x][y] - 1].GetShip(i);
+		if (PointInShip(x, y, temp->startPoint(), temp->endPoint())) {
 			stringstream resultAfter;
 			resultAfter << "Hit the ship " << ShipType(_map[x][y]);
-			totalShip--;
-			if (temp.Destroy()) {
+
+			if (temp->Destroy()) {
 				_Ship[_map[x][y] - 1].RemoveShip(i);
 				resultAfter << "\nthe ship is destroyed";
+				totalShip--;
 			}
 
 			if (totalShip <= 0) {
@@ -367,7 +368,7 @@ tuple<bool, bool, string> BattleShip::AttackShip(int x, int y) {
 				Finish = true;
 			}
 			result = make_tuple(true, Finish, resultAfter.str());
-			_map[x][y] = -1;
+			_map[x][y] = 9;
 			//DestroyShip(temp.startPoint(), temp.endPoint());
 			return result;
 		}
@@ -408,8 +409,11 @@ int BattleShip::TotalShip()const { return totalShip; }
 void BattleShip::ShowPureMap() {
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			if (_map[i][j]) {
+			if (_map[i][j] > 0 && _map[i][j] < 9) {
 				cout << "|[]|";
+			}
+			else if (_map[i][j] == 9) {
+				cout << "|{}|";
 			}
 			else {
 				cout << "~~~~";
@@ -436,10 +440,10 @@ void BattleShip::ShowMap() {
 
 		for (int j = 0; j < n; j++) {
 			cout << "|";
-			if (_map[i][j] > 0) {
+			if (_map[i][j] > 0 && _map[i][j] < 9) {
 				cout << "[]";
 			}
-			else if (_map[i][j] < 0)
+			else if (_map[i][j] == 9)
 			{
 				cout << "><";
 			}
@@ -552,8 +556,7 @@ bool ShipManager::AddShip(Point start, Point end, int type) {
 	if (_ship.size() == limit) _ship.resize(limit);
 	return true;
 }
-
-Ship ShipManager::GetShip(int index) {
+Ship ShipManager::GetShipCopy(int index) {
 	Ship result;
 	if (index < 0 && index >= _ship.size()) {
 		cout << "Out of range" << endl;
@@ -561,6 +564,16 @@ Ship ShipManager::GetShip(int index) {
 	}
 
 	return _ship[index];
+}
+
+Ship* ShipManager::GetShip(int index) {
+	Ship result;
+	if (index < 0 && index >= _ship.size()) {
+		cout << "Out of range" << endl;
+		return nullptr;
+	}
+
+	return &_ship[index];
 }
 
 bool ShipManager::RemoveShip(int index) {

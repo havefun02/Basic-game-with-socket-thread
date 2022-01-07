@@ -52,7 +52,8 @@ public:
 public:
 	void setLimit(int);
 	bool AddShip(Point, Point, int);
-	Ship GetShip(int);
+	Ship GetShipCopy(int);
+	Ship* GetShip(int);
 	bool RemoveShip(int);
 	int size();
 	bool isFull();
@@ -88,9 +89,12 @@ private:										// phuc vu cho cac ham public (k can dung vao)
 	bool PointInShip(int, int, Point, Point);
 	void DestroyShip(Point, Point);
 	bool CheckNumofShip();
-	bool OutOfBoder(int);
+	bool OutOfBorder(int);
 public:
 	static int convertToX(string);
 	static int convertToY(string);
 };
+
+
+
 
