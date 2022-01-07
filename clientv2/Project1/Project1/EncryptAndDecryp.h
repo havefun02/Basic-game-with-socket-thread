@@ -7,6 +7,7 @@
 using namespace std;
 
 class Encryption {
+public:
 	static string Encrypt(const string&);
 	static string Decrypt(const string&);
 };

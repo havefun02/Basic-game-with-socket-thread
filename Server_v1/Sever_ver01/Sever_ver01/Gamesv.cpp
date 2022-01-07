@@ -1,4 +1,5 @@
 #include"Gamesv.h"
+#include"EncryptAndDecryp.h"
 unsigned int ServerGame::client_id;
 void run(map<unsigned int, pair<SOCKET, BattleShip>> s, int id1, int id2);
 ServerGame::ServerGame()
@@ -12,7 +13,7 @@ void ServerGame::update()
 	if (network->acceptNewClient(client_id))
 	{
 		client_id++;
-		cout << "update()"<< client_id << endl;
+		//cout << "update()"<< client_id << endl;
 		receive(client_id-1);
 	}
 }
@@ -21,7 +22,7 @@ void ServerGame::receive(int idnet)
 {
 	string idc1;
 	bool checkturn = 0;
-	cout << "receive: " << idnet << endl;
+	//cout << "receive: " << idnet << endl;
 	while (1)
 	{
 		char buf[1024];
@@ -36,7 +37,11 @@ void ServerGame::receive(int idnet)
 		}
 		if (brecv != 0)
 		{
-			string tmp = string(buf, 0, brecv);
+			// Decrypt
+			string tmp_encrypt = string(buf, 0, brecv);
+
+			string tmp = Encryption::Decrypt(tmp_encrypt);
+
 			int indexsig = tmp.find_first_of(":");
 			string signal = tmp.substr(0, indexsig);
 			string content = tmp.substr(indexsig + 1);
@@ -48,14 +53,15 @@ void ServerGame::receive(int idnet)
 				string s;
 				if (handler.Checkuser(network->database, content, s))
 				{
-					char buffer[] = { "Yes" };
-					send(curclient, buffer, (int)strlen(buffer), 0);
+					string buffer = Encryption::Encrypt("Yes");
+
+					send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 					send(curclient, s.c_str(), (int)strlen(s.c_str()), 0);
 				}
 				else if (!handler.Checkuser(network->database, content, s))
 				{
-					char buffer[] = { "No" };
-					send(curclient, buffer, (int)strlen(buffer), 0);
+					string buffer = Encryption::Encrypt("No");
+					send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 				}
 			}
 			else if (signal == "Login")
@@ -67,14 +73,14 @@ void ServerGame::receive(int idnet)
 				string s;
 				if (handler.ListenLogin(network->database, content, s, ind1))
 				{
-					char buffer[] = { "Yes" };
-					send(curclient, buffer, (int)strlen(buffer), 0);
+					string buffer = Encryption::Encrypt("Yes");
+					send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 					send(curclient, s.c_str(), (int)strlen(s.c_str()), 0);
 				}
 				else if (!handler.ListenLogin(network->database, content, s, ind1))
 				{
-					char buffer[] = { "No" };
-					send(curclient, buffer, (int)strlen(buffer), 0);
+					string buffer = Encryption::Encrypt("No");
+					send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 				}
 			}
 			else if (signal == "Register")
@@ -82,13 +88,13 @@ void ServerGame::receive(int idnet)
 				if (handler.ListenRegister(network->database, content))
 				{
 					handler.Writeoutdatabase(network->database);
-					char buffer[] = { "Yes" };
-					send(curclient, buffer, (int)strlen(buffer), 0);
+					string buffer = Encryption::Encrypt("Yes");
+					send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 				}
 				else
 				{
-					char buffer[] = { "No" };
-					send(curclient, buffer, (int)strlen(buffer), 0);
+					string buffer = Encryption::Encrypt("No");
+					send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 				}
 			}
 			else if (signal == "Changepass")
@@ -96,13 +102,13 @@ void ServerGame::receive(int idnet)
 				if (handler.ListenChangePass(network->database, content))
 				{
 					handler.Writeoutdatabase(network->database);
-					char buffer[] = { "Yes" };
-					send(curclient, buffer, (int)strlen(buffer), 0);
+					string buffer = Encryption::Encrypt("Yes");
+					send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 				}
 				else
 				{
-					char buffer[] = { "No" };
-					send(curclient, buffer, (int)strlen(buffer), 0);
+					string buffer = Encryption::Encrypt("No");
+					send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 				}
 			}
 			else if (signal == "Changeinfo")
@@ -110,19 +116,22 @@ void ServerGame::receive(int idnet)
 				if (handler.ListenChangeinfo(network->database, content))
 				{
 					handler.Writeoutdatabase(network->database);
-					char buffer[] = { "Yes" };
-					send(curclient, buffer, (int)strlen(buffer), 0);
+					string buffer = Encryption::Encrypt("Yes");
+					send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 				}
 				else
 				{
-					char buffer[] = { "No" };
-					send(curclient, buffer, (int)strlen(buffer), 0);
+					string buffer = Encryption::Encrypt("No");
+					send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 				}
 			}
 			else if (signal == "ListOnline")
 			{
 				//return the list player online
 				string tmp = handler.DatabaseToString(network->database,idnet);
+
+				tmp = Encryption::Encrypt(tmp);
+
 				send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
 			else if (signal == "ConnectClient")
@@ -134,6 +143,8 @@ void ServerGame::receive(int idnet)
 
 					string tmp = "Join+" + to_string(idnet);
 
+					tmp = Encryption::Encrypt(tmp);
+
 					send(network->sessions[stoi(content)].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 				}
 			}
@@ -141,10 +152,16 @@ void ServerGame::receive(int idnet)
 			{
 				idc1 = content;
 				tmp = "Yes";
+
+				tmp = Encryption::Encrypt(tmp);
+
 				send(network->sessions[stoi(idc1)].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
 			else if (signal == "No") {
 				tmp = "No";
+
+				tmp = Encryption::Encrypt(tmp);
+
 				send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
 			/*	else if (signal == "File1:")
@@ -165,23 +182,31 @@ void ServerGame::receive(int idnet)
 				}
 				network->sessions[idnet].second = mapClient;
 				string tmp = "StartGame";
+
+				tmp = Encryption::Encrypt(tmp);
+
 				send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
 			else if (signal == "Start")
 			{
 				char buf[1024];
 				string tmp = "Your turn!";
+
+				tmp = Encryption::Encrypt(tmp);
+
 				send(network->sessions[idnet].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
 			else if (signal == "Start1")
 			{
 				char buf[1024];
 				string tmp = "Wait!";
+
+				tmp = Encryption::Encrypt(tmp);
+
 				send(network->sessions[idnet].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
 			else if (signal == "atk")
 			{
-
 				tuple<bool, bool, string> result;
 				int x, y;
 				bool IsHit, IsFinish;
@@ -194,27 +219,51 @@ void ServerGame::receive(int idnet)
 				string resultMatrix1 = network->sessions[stoi(idc1)].second.convertMap();
 				string resultMatrix2 = network->sessions[idnet].second.convertMap();
 				// Ex: resultMatrix1 = "010000100100...."
+
+				resultMatrix1 = Encryption::Encrypt(resultMatrix1);
+				resultMatrix2 = Encryption::Encrypt(resultMatrix2);
+
 				send(network->sessions[stoi(idc1)].first, resultMatrix1.c_str(), (int)strlen(resultMatrix1.c_str()), 0);
 				send(network->sessions[idnet].first, resultMatrix2.c_str(), (int)strlen(resultMatrix2.c_str()), 0);
 				if (IsHit) {				// true mean the current Client who hit can continue playing
 					string mes = "Your turn!";
+
+					mes = Encryption::Encrypt(mes);
+
 					send(network->sessions[idnet].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
 					mes = "Wait!";
+
+					mes = Encryption::Encrypt(mes);
+
 					send(network->sessions[stoi(idc1)].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
 				}
 				else						// false mean the current Client who miss stop playing and
 				{
 					string mes = "Your turn!";
+
+					mes = Encryption::Encrypt(mes);
+
 					send(network->sessions[stoi(idc1)].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
 					mes = "Wait!";
+
+					mes = Encryption::Encrypt(mes);
+
 					send(network->sessions[idnet].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
+
+					checkturn = !checkturn;
 				}
 
 
 				if (IsFinish) {				//Is the game done yet?
 					string mes = "Win";
+
+					mes = Encryption::Encrypt(mes);
+
 					send(network->sessions[idnet].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
 					mes = "Lose";
+
+					mes = Encryption::Encrypt(mes);
+
 					send(network->sessions[stoi(idc1)].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
 				}
 			}
@@ -222,6 +271,9 @@ void ServerGame::receive(int idnet)
 			{
 				string t1 = to_string(client_id - 1);
 				string buffer = "Login:" + t1;
+
+				buffer = Encryption::Encrypt(buffer);
+
 				send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 
 				//
@@ -242,8 +294,9 @@ void ServerGame::receive(int idnet)
 			}
 			else if (signal == "CANCEL")
 			{
-				char buffer[] = { "UiClient" };
-				send(curclient, buffer, (int)strlen(buffer), 0);
+				string buffer = Encryption::Encrypt("UiClient");
+
+				send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 				closesocket(curclient);
 				ExitThread(0);
 			}
