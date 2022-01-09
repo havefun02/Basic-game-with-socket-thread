@@ -8,7 +8,7 @@ class ClientGame
 {
 private:
 	string _signal;
-	bool _Access;
+	bool _encrypt;
 public:
 	ClientGame();
 	UI ui;
@@ -30,7 +30,7 @@ public:
 	void UiClient();
 	void CheckUser();
 	string getsignal() { return _signal; }
-	bool getaccess() { return _Access; }
+	bool getaccess() { return _encrypt; }
 	void setsignal(string s) { _signal = s; }
-	void setaccess(bool b) { _Access = b; }
+	void setaccess(bool b) { _encrypt = b; }
 };

@@ -38,9 +38,16 @@ void ServerGame::receive(int idnet)
 		if (brecv != 0)
 		{
 			// Decrypt
+			bool checken = 0;
+			string tmp;
 			string tmp_encrypt = string(buf, 0, brecv);
-
-			string tmp = Encryption::Decrypt(tmp_encrypt);
+			if (tmp_encrypt.substr(0,1) == "1") checken = 1;
+			if (checken) {
+				tmp_encrypt = tmp_encrypt.substr(1);
+				tmp = Encryption::Decrypt(tmp_encrypt);
+			}
+			else
+				tmp = tmp_encrypt;
 
 			int indexsig = tmp.find_first_of(":");
 			string signal = tmp.substr(0, indexsig);

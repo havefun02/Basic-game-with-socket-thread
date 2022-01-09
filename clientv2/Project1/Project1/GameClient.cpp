@@ -8,7 +8,6 @@
 ClientGame::ClientGame() {
 	network = new ClientNetwork();
     player = new PlayerAccount();
-    setaccess(0);
     string packet_data = Encryption::Encrypt("Connect to sv:");
 
     send(network->ClientSocket, packet_data.c_str(), (int)strlen(packet_data.c_str()), 0);
@@ -32,6 +31,7 @@ void ClientGame::update()
     if (data_length > 0)
     {
         string sig = string(network_data, 0, data_length);
+        sig = Encryption::Decrypt(sig);
         if (sig.substr(0, 6) == "Login:") 
         {
             setsignal("Login");
@@ -130,8 +130,10 @@ void ClientGame::UiClient()
                     {
                         //send to sv
                         string tmp = "Yes:"+ idplayer;
-
-                        tmp = Encryption::Encrypt(tmp);
+                        if (getaccess()) {
+                            tmp = Encryption::Encrypt(tmp);
+                            tmp = "1" + tmp;
+                        }
 
                         send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                         break;
@@ -140,8 +142,10 @@ void ClientGame::UiClient()
                     {
                         string tmp = "No:";
 
-                        tmp = Encryption::Encrypt(tmp);
-
+                        if (getaccess()) {
+                            tmp = Encryption::Encrypt(tmp);
+                            tmp = "1" + tmp;
+                        }
                         send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                         setsignal("UiClient");
                         return;
@@ -184,7 +188,10 @@ void ClientGame::UiClient()
                 }
             }
             smap = "File:" + smap;
-
+            if (getaccess()) {
+                smap = Encryption::Encrypt(smap);
+                smap = "1" + smap;
+            }
             smap = Encryption::Encrypt(smap);
 
             send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
@@ -204,8 +211,10 @@ void ClientGame::UiClient()
             if (sig1 == "StartGame")
             {
                 string tm = "Start1:";
-
-                tm = Encryption::Encrypt(tm);
+                if (getaccess()) {
+                    tm = Encryption::Encrypt(tm);
+                    tm = "1" + tm;
+                }
 
                 send(network->ClientSocket, tm.c_str(), (int)strlen(tm.c_str()), 0);
                 while (1)
@@ -290,8 +299,11 @@ void ClientGame::UiClient()
                                     if (stoi(CurPass) < 10)
                                         CurPass = "0" + CurPass;//y
                                     string packet = "atk:" + Id + CurPass;
-
-                                    packet = Encryption::Encrypt(packet);
+                                    if (getaccess()) {
+                                        packet = Encryption::Encrypt(packet);
+                                        packet = "1" + packet;
+                                    }
+                        
 
                                     send(network->ClientSocket, packet.c_str(), (int)strlen(packet.c_str()), 0);
                                     dt=network->Receive(network_data);
@@ -472,28 +484,14 @@ void ClientGame::CheckUser()
                 int data;
                 string sig;
                 string tmp = "Find:" + name;
-                while (1)
+                if (getaccess())
                 {
-                    gotoXY(40, 22);
-                    cout << "DO YOU WANT TO ENCRYPt, Enter to yes-any key to no";
-                    if (_kbhit()) {
-                        char t = _getch();
-                        if (t == 13)
-                        {
-                            //encrypt
-
-                            tmp = Encryption::Encrypt(tmp);
-
-                            send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                            break;
-                        }
-                        else
-                        {
-                            send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                            break;
-                        }
-                    }
+                    tmp = Encryption::Encrypt(tmp);
+                    tmp = "1" + tmp;
                 }
+
+                send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                break;
                 gotoXY(40, 22);
                 cout << "                                                         ";
                 while (1)
@@ -809,12 +807,13 @@ void ClientGame::Login()
                                 //encrypt
 
                                 tmp = Encryption::Encrypt(tmp);
-
+                                setaccess(1);
                                 send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                                 break;
                             }
                             else
                             {
+                                setaccess(0);
                                 send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                                 break;
                             }
@@ -891,9 +890,8 @@ void ClientGame::Login()
                 }
                 else if (Checkid == false && Checkpass == false && !Create && !Create1 && quit && t == 13 && y==39)
                 {
-                    string tmp = "END";
-
-                    tmp = Encryption::Encrypt(tmp);
+                    string tmp = "END:";//-------------------
+                
 
                     send(network->ClientSocket, tmp.c_str(), strlen(tmp.c_str()), 0);
                     shutdown(network->ClientSocket, SD_SEND);
@@ -1033,28 +1031,15 @@ void ClientGame::Changeinfo()
                     send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                     int data;
                     string sig;
-                    clrscr();
-                    while (1)
+                    
+                    if (getaccess())
                     {
-                        ui.setDrawEncrypt();
-                        if (_kbhit()) {
-                            char t = _getch();
-                            if (t == 13)
-                            {
-                                //encrypt
+                        tmp = Encryption::Encrypt(tmp);
+                        tmp = "1" + tmp;
+                     }
 
-                                tmp = Encryption::Encrypt(tmp);
-
-                                send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                                break;
-                            }
-                            else
-                            {
-                                send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                                break;
-                            }
-                        }
-                    }
+                    send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                            
 
                     while (1)
                     {
@@ -1277,29 +1262,13 @@ void ClientGame::Register()
                     int data;
                     string sig;
                     string tmp = "Register:" + Id + "," + Pass + "." + Fullname + "/" + Day + "+" + Month + "-" + Year;
-                    clrscr();
-                    while (1)
+                    if (getaccess())
                     {
-                        ui.setDrawEncrypt();
-                        if (_kbhit()) {
-                            char t = _getch();
-                            if (t == 13)
-                            {
-                                //encrypt
-
-                                tmp = Encryption::Encrypt(tmp);
-
-                                send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                                break;
-                            }
-                            else
-                            {
-                                send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                                break;
-                            }
-                        }
+                        tmp = Encryption::Encrypt(tmp);
+                        tmp = "1" + tmp;
                     }
 
+                    send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0); 
                     while (1)
                     {
                         //wait for receive
@@ -1534,29 +1503,14 @@ void ClientGame::Changepass()
                     send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                     int data;
                     string sig;
-                    clrscr();
-                    while (1)
+                    if (getaccess())
                     {
-                        ui.setDrawEncrypt();
-                        if (_kbhit()) {
-                            char t = _getch();
-                            if (t == 13)
-                            {
-                                //encrypt
-
-                                tmp = Encryption::Encrypt(tmp);
-
-                                send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                                break;
-                            }
-                            else
-                            {
-                                send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                                break;
-                            }
-                        }
+                        tmp = Encryption::Encrypt(tmp);
+                        tmp = "1" + tmp;
                     }
-
+                         
+                    send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                    
                     while (1)
                     {
                         //wait for receive
@@ -1641,7 +1595,13 @@ void ClientGame::Changepass()
 
 void ClientGame::Playgame() {
     //send request to sv to show list online player
+
     string req = Encryption::Encrypt("ListOnline");
+    if (getaccess())
+    {
+        string req = Encryption::Encrypt("ListOnline");
+        req = "1" + req;
+    }
     send(network->ClientSocket, req.c_str(), (int)strlen(req.c_str()), 0);
 
     int data = 0;
@@ -1704,7 +1664,11 @@ void ClientGame::Playgame() {
 
                 string re = "ConnectClient:" + Onlinelist[((y1 - 20) / 2)-1]->id();
 
-                re = Encryption::Encrypt(re);
+                if (getaccess())
+                {
+                    string re = Encryption::Encrypt(re);
+                    re = "1" + re;
+                }
 
                 send(network->ClientSocket, re.c_str(), strlen(re.c_str()), 0);
                 while (1)
@@ -1765,9 +1729,11 @@ void ClientGame::Playgame() {
         }
     }
     smap = "File:" + smap;
-
-    smap = Encryption::Encrypt(smap);
-
+    if (getaccess())
+    {
+        smap= Encryption::Encrypt(smap);
+        smap = "1" + smap;
+    }
     send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
 
     //
@@ -1783,8 +1749,11 @@ void ClientGame::Playgame() {
     if (sig == "StartGame")
     {
         string tm = "Start:";
-
-        tm = Encryption::Encrypt(tm);
+        if (getaccess())
+        {
+            tm = Encryption::Encrypt(tm);
+            tm = "1" + tm;
+        }
 
         send(network->ClientSocket, tm.c_str(), (int)strlen(tm.c_str()), 0);
        
@@ -1870,8 +1839,11 @@ void ClientGame::Playgame() {
                             if (stoi(CurPass) < 10)
                                 CurPass = "0" + CurPass;
                             string packet = "atk:" + Id + CurPass;
-
-                            packet = Encryption::Encrypt(packet);
+                            if (getaccess())
+                            {
+                                packet = Encryption::Encrypt(packet);
+                                packet = "1" + packet;
+                            }
 
                             send(network->ClientSocket, packet.c_str(), (int)strlen(packet.c_str()), 0);
                             data_length1=network->Receive(network_data);
