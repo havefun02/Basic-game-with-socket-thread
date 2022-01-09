@@ -842,6 +842,7 @@ void ClientGame::Login()
                             //wait for receive
                             data = network->Receive(network_data);
                             sig = string(network_data, 0, data);
+                            sig = Encryption::Decrypt(sig);
                             if (data > 0)
                                 break;
                         }
@@ -1529,6 +1530,7 @@ void ClientGame::Changepass()
                 if (Checkid == false && Checkpass == false && Checkcurpass == false && Create == false && t == 13 && y==39)
                 {
                     string tmp = "Changepass:" + Id + "," + CurPass + "." + Pass;
+                    tmp = Encryption::Encrypt(tmp);
                     send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                     int data;
                     string sig;
@@ -1646,7 +1648,6 @@ void ClientGame::Playgame() {
     while (data<=0)
     {
         data = network->Receive(network_data);
-        
     }
    
     string sig = string(network_data, 0, data);
