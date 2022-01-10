@@ -224,30 +224,26 @@ void ClientGame::UiClient()
                     ui.Showmap(smap);
                     int dt=0;
                     string si;
-                    while (1)
-                    {
-                        dt = network->Receive(network_data);
-                        si = string(network_data, 0, dt);
+                    dt = network->Receive(network_data);
+                    si = string(network_data, 0, dt);
 
-                        si = Encryption::Decrypt(si);
-
-                        if (si == "Your turn!")
-                            break;
-                        else if (si=="Wait!"){
-                            gotoXY(105, 40);
-                            cout << "                  ";
-                            //Sleep(100);
-                            gotoXY(105, 40);
-                            cout << "Wait";
-                        }
-                        else {
-                            ui.draw.DrawControler();
-                            ui.Showmap(smap);
-                            smap = si;
-                        }
-                            
+                    si = Encryption::Decrypt(si);
+                    if (si=="Wait!"){
+                        gotoXY(105, 40);
+                        cout << "                  ";
+                        //Sleep(100);
+                        gotoXY(105, 40);
+                        cout << "Wait";
+                        continue;
                     }
-                    if (si == "Your turn!")
+                    else if (si != "Your turn!"){
+                        ui.draw.DrawControler();
+                        ui.Showmap(smap);
+                        smap = si;
+                    }
+                            
+              
+                    else if (si == "Your turn!")
                     {
                         gotoXY(105, 40);
                         cout << "Your turn";
@@ -1770,31 +1766,25 @@ void ClientGame::Playgame() {
             ui.draw.DrawControler();
             ui.Showmap(smap);
             data_length1 = 0;
-            while (1)
+            data_length1 = network->Receive(network_data);
+            sig = string(network_data, 0, data_length1);
+
+            sig = Encryption::Decrypt(sig);
+
+            if (sig=="Wait!")
             {
-                data_length1 = network->Receive(network_data);
-                sig = string(network_data, 0, data_length1);
-
-                sig = Encryption::Decrypt(sig);
-
-                if (sig == "Your turn!")
-                    break;
-                else if (sig=="Wait!")
-                {
-                    gotoXY(105, 40);
-                    cout << "                  ";
-                    //Sleep(100);
-                    gotoXY(105, 40);
-                    cout << "Wait";
-                }
-                else {
-                    ui.draw.DrawControler();
-                    ui.Showmap(smap);
-                    smap = sig;
-                }
-
+                gotoXY(105, 40);
+                cout << "                  ";
+                //Sleep(100);
+                gotoXY(105, 40);
+                cout << "Wait";
+                continue;
             }
-            if (sig == "Your turn!")
+            else if(sig!="Your turn!") {
+                smap = sig;
+                continue;
+            }
+            else if (sig == "Your turn!")
             {
                 gotoXY(105, 40);
                 cout << "Your turn";
