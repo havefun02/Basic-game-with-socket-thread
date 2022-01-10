@@ -313,6 +313,7 @@ void ClientGame::UiClient()
                                     si = Encryption::Decrypt(si);
 
                                     smap = si;
+                                    break;
                                 }
                                 else if (t != 8 && x >= 65 && x <= 117 && y==42)
                                 {
@@ -1848,12 +1849,13 @@ void ClientGame::Playgame() {
                             }
 
                             send(network->ClientSocket, packet.c_str(), (int)strlen(packet.c_str()), 0);
+
                             data_length1=network->Receive(network_data);
                             sig = string(network_data, 0, data_length1);
 
                             sig = Encryption::Decrypt(sig);
-
                             smap = sig;
+                            break;
                         }
                         else if (t != 8 && x >= 65 && x <= 117 && y==42)
                         {
