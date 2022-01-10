@@ -10,6 +10,7 @@ ClientGame::ClientGame() {
     player = new PlayerAccount();
     string packet_data = Encryption::Encrypt("Connect to sv:");
 
+    packet_data = "1" + packet_data;
     send(network->ClientSocket, packet_data.c_str(), (int)strlen(packet_data.c_str()), 0);
 	//NetworkService::sendMessage(network->ClientSocket, packet_data.c_str(), strlen(packet_data.c_str()));//init message
 }
