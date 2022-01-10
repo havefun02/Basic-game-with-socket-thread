@@ -233,12 +233,17 @@ void ClientGame::UiClient()
 
                         if (si == "Your turn!")
                             break;
-                        else {
+                        else if (si=="Wait!"){
                             gotoXY(105, 40);
                             cout << "                  ";
                             //Sleep(100);
                             gotoXY(105, 40);
                             cout << "Wait";
+                        }
+                        else {
+                            ui.draw.DrawControler();
+                            ui.Showmap(smap);
+                            smap = si;
                         }
                             
                     }
@@ -1774,13 +1779,18 @@ void ClientGame::Playgame() {
 
                 if (sig == "Your turn!")
                     break;
-                else
+                else if (sig=="Wait!")
                 {
                     gotoXY(105, 40);
                     cout << "                  ";
                     //Sleep(100);
                     gotoXY(105, 40);
                     cout << "Wait";
+                }
+                else {
+                    ui.draw.DrawControler();
+                    ui.Showmap(smap);
+                    smap = sig;
                 }
 
             }
