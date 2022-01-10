@@ -1598,7 +1598,7 @@ void ClientGame::Changepass()
 void ClientGame::Playgame() {
     //send request to sv to show list online player
 
-    string req = Encryption::Encrypt("ListOnline");
+    string req = "ListOnline";
     if (getaccess())
     {
         string req = Encryption::Encrypt("ListOnline");
