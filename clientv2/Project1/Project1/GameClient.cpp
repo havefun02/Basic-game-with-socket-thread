@@ -193,7 +193,7 @@ void ClientGame::UiClient()
                 smap = Encryption::Encrypt(smap);
                 smap = "1" + smap;
             }
-            smap = Encryption::Encrypt(smap);
+
 
             send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
            
