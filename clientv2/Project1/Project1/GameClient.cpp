@@ -808,6 +808,7 @@ void ClientGame::Login()
                                 //encrypt
 
                                 tmp = Encryption::Encrypt(tmp);
+                                tmp = "1" + tmp;
                                 setaccess(1);
                                 send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                                 break;
