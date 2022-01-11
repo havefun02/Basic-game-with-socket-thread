@@ -237,9 +237,8 @@ void ClientGame::UiClient()
                         continue;
                     }
                     else if (si != "Your turn!"){
-                        ui.draw.DrawControler();
-                        ui.Showmap(smap);
                         smap = si;
+                        continue;
                     }
                             
               
