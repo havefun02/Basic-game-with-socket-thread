@@ -152,6 +152,7 @@ void ServerGame::receive(int idnet)
 
 					tmp = Encryption::Encrypt(tmp);
 
+
 					send(network->sessions[stoi(content)].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 				}
 			}

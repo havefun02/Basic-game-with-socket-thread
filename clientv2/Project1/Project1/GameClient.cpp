@@ -226,9 +226,11 @@ void ClientGame::UiClient()
                     string si;
                     while (1)
                     {
-
-                        dt = network->Receive(network_data);
-                        si = string(network_data, 0, dt);
+                        dt = 0;
+                        do {
+                            dt = network->Receive(network_data);
+                            si = string(network_data, 0, dt);
+                        } while (dt == 0);
 
                         si = Encryption::Decrypt(si);
                         if (si == "Wait!") {
@@ -239,7 +241,6 @@ void ClientGame::UiClient()
                             cout << "Wait";
                             continue;
                         }
-
                         else if (si == "Your turn!")
                         {
                             gotoXY(105, 40);
@@ -357,7 +358,7 @@ void ClientGame::UiClient()
                         }
                         else if (si != "Your turn!") {
                             smap = si;
-                            continue;
+                            break;
                         }
                     }
                 }
@@ -1766,10 +1767,12 @@ void ClientGame::Playgame() {
         {
             ui.draw.DrawControler();
             ui.Showmap(smap);
-            data_length1 = 0;
             while (1) {
-                data_length1 = network->Receive(network_data);
-                sig = string(network_data, 0, data_length1);
+                data_length1 = 0;
+                do {
+                    data_length1 = network->Receive(network_data);
+                    sig = string(network_data, 0, data_length1);
+                } while (data_length1 == 0);
                 sig = Encryption::Decrypt(sig);
                 if (sig == "Wait!")
                 {
