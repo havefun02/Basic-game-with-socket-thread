@@ -1,5 +1,6 @@
 #include"General.h"
 #include"Servernetwork.h"
+
 ServerNetwork::ServerNetwork()
 {
 	WSADATA wsdata;

@@ -147,6 +147,7 @@ void ServerGame::receive(int idnet)
 				if (handler.Finduserbyid(network->database, content, t))
 				{
 					//send to another client
+					idc1 = content;
 
 					string tmp = "Join+" + to_string(idnet);
 
@@ -158,7 +159,8 @@ void ServerGame::receive(int idnet)
 			}
 			else if (signal == "Yes")
 			{
-				idc1 = content;
+
+				idc1 = content;	//icd1 cua 0 = 1, icd1 cua 1 = ?
 				tmp = "Yes";
 
 				tmp = Encryption::Encrypt(tmp);
@@ -215,6 +217,14 @@ void ServerGame::receive(int idnet)
 			}
 			else if (signal == "atk")
 			{
+
+				cout << "Client: " << idnet << " : " << content << endl;
+				cout << "Opp: "<< idc1 << endl;
+
+				
+				network->sessions[stoi(idc1)].second.ShowMap();
+
+
 				tuple<bool, bool, string> result;
 				int x, y;
 				bool IsHit, IsFinish;
@@ -227,9 +237,11 @@ void ServerGame::receive(int idnet)
 				string resultMatrix1 = network->sessions[stoi(idc1)].second.convertMap();
 				string resultMatrix2 = network->sessions[idnet].second.convertMap();
 				// Ex: resultMatrix1 = "010000100100...."
+				cout << message << endl;
 
 				resultMatrix1 = Encryption::Encrypt(resultMatrix1);
 				resultMatrix2 = Encryption::Encrypt(resultMatrix2);
+
 
 				send(network->sessions[stoi(idc1)].first, resultMatrix1.c_str(), (int)strlen(resultMatrix1.c_str()), 0);
 				send(network->sessions[idnet].first, resultMatrix2.c_str(), (int)strlen(resultMatrix2.c_str()), 0);
