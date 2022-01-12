@@ -156,6 +156,7 @@ void ClientGame::UiClient()
             //first update map
             ui.ShowforReadFile();
             string smap;//map
+            string map_send;
             string namef;
             int x1 = 75, ix1 = 75;
             while (1)
@@ -166,6 +167,7 @@ void ClientGame::UiClient()
                     if (t == 13)
                     {
                         smap = FileSystem::ReadFileCSV(namef);
+                        map_send = smap;
                         break;
                     }
                     else if (t != 8 && x1 >= 75 && x1 < 117)
@@ -188,14 +190,14 @@ void ClientGame::UiClient()
                     }
                 }
             }
-            smap = "File:" + smap;
+            map_send = "File:" + map_send;
             if (getaccess()) {
-                smap = Encryption::Encrypt(smap);
-                smap = "1" + smap;
+                map_send = Encryption::Encrypt(map_send);
+                map_send = "1" + map_send;
             }
 
 
-            send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
+            send(network->ClientSocket, map_send.c_str(), (int)strlen(map_send.c_str()), 0);
            
 
             //wait
@@ -356,7 +358,7 @@ void ClientGame::UiClient()
                             setsignal("UiClient");
                             return;
                         }
-                        else if (si != "Your turn!") {
+                        else {
                             smap = si;
                             break;
                         }
@@ -1702,6 +1704,7 @@ void ClientGame::Playgame() {
     //input file map
     ui.ShowforReadFile();
     string smap;//map
+    string map_send;
     string namef;
     x1 = 75; int ix1 = 75;
     while (1)
@@ -1712,6 +1715,7 @@ void ClientGame::Playgame() {
             if (t == 13)
             {
                 smap = FileSystem::ReadFileCSV(namef);
+                map_send = smap;
                 break;
             }
             else if (t != 8 && x1 >= 75 && x1 < 117)
@@ -1734,13 +1738,13 @@ void ClientGame::Playgame() {
             }
         }
     }
-    smap = "File:" + smap;
+    map_send = "File:" + map_send;
     if (getaccess())
     {
-        smap= Encryption::Encrypt(smap);
-        smap = "1" + smap;
+        map_send = Encryption::Encrypt(map_send);
+        map_send = "1" + map_send;
     }
-    send(network->ClientSocket, smap.c_str(), (int)strlen(smap.c_str()), 0);
+    send(network->ClientSocket, map_send.c_str(), (int)strlen(map_send.c_str()), 0);
 
     //
     int data_length1 = 0;
@@ -1768,12 +1772,22 @@ void ClientGame::Playgame() {
             ui.draw.DrawControler();
             ui.Showmap(smap);
             while (1) {
+
                 data_length1 = 0;
                 do {
                     data_length1 = network->Receive(network_data);
                     sig = string(network_data, 0, data_length1);
                 } while (data_length1 == 0);
+
+                data_length1 = network->Receive(network_data);
+                sig = string(network_data, 0, data_length1);
+
+
                 sig = Encryption::Decrypt(sig);
+
+               /* cout << sig << endl;
+                Sleep(1000);*/
+
                 if (sig == "Wait!")
                 {
                     gotoXY(105, 40);
@@ -1900,7 +1914,7 @@ void ClientGame::Playgame() {
                     setsignal("UiClient");
                     return;
                 }
-                else if (sig != "Your turn!") {
+                else {
                     smap = sig;
                     break;
                 }
