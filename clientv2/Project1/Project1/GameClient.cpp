@@ -228,11 +228,13 @@ void ClientGame::UiClient()
                     string si;
                     while (1)
                     {
-                        dt = 0;
-                        do {
+                       dt = 0;
+                      while(1){
                             dt = network->Receive(network_data);
                             si = string(network_data, 0, dt);
-                        } while (dt == 0);
+                            if (dt != 0)
+                                break;
+                        } 
 
                         si = Encryption::Decrypt(si);
                         if (si == "Wait!") {
@@ -1774,10 +1776,11 @@ void ClientGame::Playgame() {
             while (1) {
 
                 data_length1 = 0;
-                do {
+               while(1){
                     data_length1 = network->Receive(network_data);
                     sig = string(network_data, 0, data_length1);
-                } while (data_length1 == 0);
+                    if (data_length1 != 0) break;
+                } 
 
                 data_length1 = network->Receive(network_data);
                 sig = string(network_data, 0, data_length1);

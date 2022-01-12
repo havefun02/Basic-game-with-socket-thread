@@ -51,7 +51,7 @@ ClientNetwork::ClientNetwork()
 
 int ClientNetwork::Receive(char* recvbuf)
 {
-	iResult = NetworkService::receiveMessage(ClientSocket, recvbuf,100000);
+	iResult = NetworkService::receiveMessage(ClientSocket, recvbuf, strlen(recvbuf));
 	//catch the packet
 	if (iResult == 0)
 	{
