@@ -13,6 +13,6 @@ public:
 	int iResult;
 	ClientNetwork();
 	void Connect();
-	int Receive(char*);
+	int Receive(char* recvbuf);
 	SOCKET ClientSocket;
 };

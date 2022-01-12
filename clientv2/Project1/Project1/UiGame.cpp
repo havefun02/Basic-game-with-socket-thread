@@ -176,6 +176,8 @@ void UI::setUiClient()
 	cout << "CHECK USER      " << endl;
 	gotoXY(45, 39);
 	cout << "LOG OUT         " << endl;
+	gotoXY(45, 43);
+	cout << "Rest Room         " << endl;
 
 }
 

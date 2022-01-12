@@ -14,7 +14,7 @@ public:
 	UI ui;
 	ClientNetwork* network;
 	PlayerAccount *player;
-	char network_data[1024];
+	string network_data;
 	vector<vector<int>> map;
 	vector<vector<int>> updatemap(string);
 
@@ -29,6 +29,7 @@ public:
 	void update();
 	void UiClient();
 	void CheckUser();
+	void Restroom();
 	string getsignal() { return _signal; }
 	bool getaccess() { return _encrypt; }
 	void setsignal(string s) { _signal = s; }

@@ -27,7 +27,7 @@ void ClientGame::update()
 {
     // tin hieu tu sever auto ma hoa
     // su dung Encrytion::Decrypt(string); de tin hieu duoc giai ma
-
+    char network_data[1024];
     int data_length = network->Receive(network_data);
     if (data_length > 0)
     {
@@ -97,284 +97,290 @@ vector<PlayerAccount*> ClientGame::getOnlinelist(string format)
     return list;
 }
 
+
+void ClientGame::Restroom()
+{
+    clrscr();
+    ui.draw.DrawIn();
+    ui.draw.DrawOut();
+    int data_length = 0;
+    string sig = "";
+    char network_data[1024];
+    data_length = network->Receive(network_data);
+    sig = string(network_data, 0, data_length);
+    sig = Encryption::Decrypt(sig);
+    string idplayer = sig.substr(5);
+    sig = sig.substr(0, 4);
+    if (data_length > 0 && sig == "Join")
+    {
+        clrscr();
+        ui.draw.DrawOut();
+        gotoXY(40, 25);
+        cout << "Someone invite you to play";
+        gotoXY(40, 27);
+        cout << "Enter to play";
+        while (1)
+        {
+            if (_kbhit()) {
+                char t = _getch();
+                if (t == 13)
+                {
+                    //send to sv
+                    string tmp = "Yes:" + idplayer;
+                    if (getaccess()) {
+                        tmp = Encryption::Encrypt(tmp);
+                        tmp = "1" + tmp;
+                    }
+
+                    send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                    break;
+                }
+                else
+                {
+                    string tmp = "No:";
+
+                    if (getaccess()) {
+                        tmp = Encryption::Encrypt(tmp);
+                        tmp = "1" + tmp;
+                    }
+                    send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                    setsignal("UiClient");
+                    return;
+                }
+            }
+        }
+        //first update map
+        ui.ShowforReadFile();
+        string smap;//map
+        string map_send;
+        string namef;
+        int x1 = 75, ix1 = 75;
+        while (1)
+        {
+            if (_kbhit())
+            {
+                char t = _getch();
+                if (t == 13)
+                {
+                    smap = FileSystem::ReadFileCSV(namef);
+                    map_send = smap;
+                    break;
+                }
+                else if (t != 8 && x1 >= 75 && x1 < 117)
+                {
+                    //type id
+                    gotoXY(x1, 24);
+                    putchar(t);
+                    namef.push_back(t);
+                    x1++;
+                    ix1 = x1;
+                }
+                else if (t == 8 && x1 > 75 && x1 <= 117)
+                {
+                    //clear
+                    gotoXY(x1, 24);
+                    putchar(' ');
+                    namef.erase(namef.length() - 1);
+                    x1--;
+                    ix1 = x1;
+                }
+            }
+        }
+        map_send = "File:" + map_send;
+        if (getaccess()) {
+            map_send = Encryption::Encrypt(map_send);
+            map_send = "1" + map_send;
+        }
+
+
+        send(network->ClientSocket, map_send.c_str(), (int)strlen(map_send.c_str()), 0);
+
+
+        //wait
+        int data_length1 = 0;
+        string sig1;
+        while (sig1 != "StartGame")
+        {
+            char network_data[1024];
+            data_length1 = network->Receive(network_data);
+            sig1 = string(network_data, 0, data_length1);
+            sig1 = Encryption::Decrypt(sig1);
+        }
+        //send to play game
+
+        if (sig1 == "StartGame")
+        {
+            string tm = "Start1:";
+            if (getaccess()) {
+                tm = Encryption::Encrypt(tm);
+                tm = "1" + tm;
+            }
+
+            send(network->ClientSocket, tm.c_str(), (int)strlen(tm.c_str()), 0);
+            while (1)
+            {
+                ui.draw.DrawControler();
+                ui.Showmap(smap);
+                int dt = 0;
+                string si;
+                while (1)
+                {
+                    dt = 0;
+                    while (1) {
+                        char network_data[1024];
+                        dt = network->Receive(network_data);
+                        si = string(network_data, 0, dt);
+                        if (dt != 0)
+                            break;
+                    }
+
+                    si = Encryption::Decrypt(si);
+                    if (si == "Wait!") {
+                        gotoXY(105, 40);
+                        cout << "                  ";
+                        //Sleep(100);
+                        gotoXY(105, 40);
+                        cout << "Wait";
+                        continue;
+                    }
+                    else if (si == "Your turn!")
+                    {
+                        gotoXY(105, 40);
+                        cout << "Your turn";
+                        string Id = "", CurPass = "";
+                        int x = 65, y = 40, ix = x, pcx = x;
+                        gotoXY(37, 40); cout << ">>" << endl;
+                        while (1)
+                        {
+                            if (y != 44) ui.cur(x, y);
+                            if (_kbhit())
+                            {
+                                char t = _getch();
+                                if (t == 9)
+                                {
+                                    if (y == 40)
+                                    {
+                                        x = pcx; y = 42;
+                                        gotoXY(37, 42);
+                                        cout << ">>" << endl;
+                                        gotoXY(37, 40);
+                                        cout << "  " << endl;
+                                    }
+                                    else if (y == 42)
+                                    {
+                                        y = 44;
+                                        gotoXY(37, 44);
+                                        cout << ">>" << endl;
+                                        gotoXY(37, 42);
+                                        cout << "  " << endl;
+                                    }
+                                    else if (y == 44)
+                                    {
+                                        x = ix; y = 40;
+                                        gotoXY(37, 40);
+                                        cout << ">>" << endl;
+                                        gotoXY(37, 44);
+                                        cout << "  " << endl;
+                                    }
+                                    continue;
+                                }
+                                else if (t != 8 && x >= 65 && x <= 117 && y == 40)
+                                {
+                                    //type password
+                                    gotoXY(x, y);
+                                    CurPass.push_back(t);
+                                    putchar(t);
+                                    x++;
+                                    pcx = x;
+                                }
+                                else if (CurPass != "" && Id != "" && t == 13 && y == 44)
+                                {
+                                    //send to sv
+                                    if (stoi(Id) < 10)
+                                        Id = "0" + Id;//x
+                                    if (stoi(CurPass) < 10)
+                                        CurPass = "0" + CurPass;//y
+                                    string packet = "atk:" + Id + CurPass;
+                                    if (getaccess()) {
+                                        packet = Encryption::Encrypt(packet);
+                                        packet = "1" + packet;
+                                    }
+                                    send(network->ClientSocket, packet.c_str(), (int)strlen(packet.c_str()), 0);
+                                    break;
+                                    // dt = network->Receive(network_data);
+                                    // si = string(network_data, 0, dt);
+                                    //
+                                    // si = Encryption::Decrypt(si);
+                                    //
+                                    // smap = si;
+                                    // break;
+                                }
+                                else if (t != 8 && x >= 65 && x <= 117 && y == 42)
+                                {
+                                    //type id
+                                    gotoXY(x, y);
+                                    putchar(t);
+                                    Id.push_back(t);
+                                    x++;
+                                    ix = x;
+                                }
+                                else if (t == 8 && x > 65 && x <= 117)
+                                {
+                                    //clear
+                                    gotoXY(x, y);
+                                    putchar(' ');
+                                    CurPass.erase(CurPass.length() - 1);
+                                    x--;
+                                    pcx = x;
+                                }
+                                else if (t == 8 && x > 65 && x <= 117)
+                                {
+                                    gotoXY(x, y);
+                                    putchar(' ');
+                                    Id.erase(Id.length() - 1);
+                                    x--;
+                                    ix = x;
+                                }
+                            }
+                        }
+                    }
+                    else if (si == "Win") {
+                        gotoXY(105, 40);
+                        cout << "You Win";
+                        Sleep(500);
+                        setsignal("UiClient");
+                        return;
+                    }
+                    else if (si == "Lose") {
+                        gotoXY(105, 40);
+                        cout << "You lose";
+                        Sleep(500);
+                        setsignal("UiClient");
+                        return;
+                    }
+                    else {
+                        smap = si;
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            setsignal("UiClient");
+            return;
+        }
+    }
+}
+
 void ClientGame::UiClient()
 {
     ui.setUiClient();
     int y = 23;
     int x = 40;
-    int data_length = 0;
-    string sig = "";
     gotoXY(40, 23); cout << ">>" << endl;
     while (1)
     {
-
-        data_length = network->Receive(network_data);
-        sig = string(network_data, 0, data_length);
-
-        sig = Encryption::Decrypt(sig);
-
-        string idplayer=sig.substr(5);
-        sig = sig.substr(0, 4);
-        if (data_length > 0 && sig == "Join")
-        {
-            clrscr();
-            ui.draw.DrawOut();
-            gotoXY(40, 25);
-            cout << "Someone invite you to play";
-            gotoXY(40, 27);
-            cout << "Enter to play";
-            while (1)
-            {
-                if (_kbhit()) {
-                    char t = _getch();
-                    if (t == 13)
-                    {
-                        //send to sv
-                        string tmp = "Yes:"+ idplayer;
-                        if (getaccess()) {
-                            tmp = Encryption::Encrypt(tmp);
-                            tmp = "1" + tmp;
-                        }
-
-                        send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                        break;
-                    }
-                    else
-                    {
-                        string tmp = "No:";
-
-                        if (getaccess()) {
-                            tmp = Encryption::Encrypt(tmp);
-                            tmp = "1" + tmp;
-                        }
-                        send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                        setsignal("UiClient");
-                        return;
-                    }
-                }
-            }
-            //first update map
-            ui.ShowforReadFile();
-            string smap;//map
-            string map_send;
-            string namef;
-            int x1 = 75, ix1 = 75;
-            while (1)
-            {
-                if (_kbhit())
-                {
-                    char t = _getch();
-                    if (t == 13)
-                    {
-                        smap = FileSystem::ReadFileCSV(namef);
-                        map_send = smap;
-                        break;
-                    }
-                    else if (t != 8 && x1 >= 75 && x1 < 117)
-                    {
-                        //type id
-                        gotoXY(x1, 24);
-                        putchar(t);
-                        namef.push_back(t);
-                        x1++;
-                        ix1 = x1;
-                    }
-                    else if (t == 8 && x1 > 75 && x1 <= 117)
-                    {
-                        //clear
-                        gotoXY(x1, 24);
-                        putchar(' ');
-                        namef.erase(namef.length() - 1);
-                        x1--;
-                        ix1 = x1;
-                    }
-                }
-            }
-            map_send = "File:" + map_send;
-            if (getaccess()) {
-                map_send = Encryption::Encrypt(map_send);
-                map_send = "1" + map_send;
-            }
-
-
-            send(network->ClientSocket, map_send.c_str(), (int)strlen(map_send.c_str()), 0);
-           
-
-            //wait
-            int data_length1 = 0;
-            string sig1;
-            while (sig1!="StartGame")
-            {
-                data_length1 = network->Receive(network_data);
-                sig1 = string(network_data, 0, data_length1);
-                sig1 = Encryption::Decrypt(sig1);
-            } 
-            //send to play game
-
-            if (sig1 == "StartGame")
-            {
-                string tm = "Start1:";
-                if (getaccess()) {
-                    tm = Encryption::Encrypt(tm);
-                    tm = "1" + tm;
-                }
-
-                send(network->ClientSocket, tm.c_str(), (int)strlen(tm.c_str()), 0);
-                while (1)
-                {
-                    ui.draw.DrawControler();
-                    ui.Showmap(smap);
-                    int dt=0;
-                    string si;
-                    while (1)
-                    {
-                       dt = 0;
-                      while(1){
-                            dt = network->Receive(network_data);
-                            si = string(network_data, 0, dt);
-                            if (dt != 0)
-                                break;
-                        } 
-
-                        si = Encryption::Decrypt(si);
-                        if (si == "Wait!") {
-                            gotoXY(105, 40);
-                            cout << "                  ";
-                            //Sleep(100);
-                            gotoXY(105, 40);
-                            cout << "Wait";
-                            continue;
-                        }
-                        else if (si == "Your turn!")
-                        {
-                            gotoXY(105, 40);
-                            cout << "Your turn";
-                            string Id = "", CurPass = "";
-                            int x = 65, y = 40, ix = x, pcx = x;
-                            gotoXY(37, 40); cout << ">>" << endl;
-                            while (1)
-                            {
-                                if (y != 44) ui.cur(x, y);
-                                if (_kbhit())
-                                {
-                                    char t = _getch();
-                                    if (t == 9)
-                                    {
-                                        if (y == 40)
-                                        {
-                                            x = pcx; y = 42;
-                                            gotoXY(37, 42);
-                                            cout << ">>" << endl;
-                                            gotoXY(37, 40);
-                                            cout << "  " << endl;
-                                        }
-                                        else if (y == 42)
-                                        {
-                                            y = 44;
-                                            gotoXY(37, 44);
-                                            cout << ">>" << endl;
-                                            gotoXY(37, 42);
-                                            cout << "  " << endl;
-                                        }
-                                        else if (y == 44)
-                                        {
-                                            x = ix; y = 40;
-                                            gotoXY(37, 40);
-                                            cout << ">>" << endl;
-                                            gotoXY(37, 44);
-                                            cout << "  " << endl;
-                                        }
-                                        continue;
-                                    }
-                                    else if (t != 8 && x >= 65 && x <= 117 && y == 40)
-                                    {
-                                        //type password
-                                        gotoXY(x, y);
-                                        CurPass.push_back(t);
-                                        putchar(t);
-                                        x++;
-                                        pcx = x;
-                                    }
-                                    else if (CurPass != "" && Id != "" && t == 13 && y == 44)
-                                    {
-                                        //send to sv
-                                        if (stoi(Id) < 10)
-                                            Id = "0" + Id;//x
-                                        if (stoi(CurPass) < 10)
-                                            CurPass = "0" + CurPass;//y
-                                        string packet = "atk:" + Id + CurPass;
-                                        if (getaccess()) {
-                                            packet = Encryption::Encrypt(packet);
-                                            packet = "1" + packet;
-                                        }
-                                        send(network->ClientSocket, packet.c_str(), (int)strlen(packet.c_str()), 0);
-                                        break;
-                                       // dt = network->Receive(network_data);
-                                       // si = string(network_data, 0, dt);
-                                       //
-                                       // si = Encryption::Decrypt(si);
-                                       //
-                                       // smap = si;
-                                       // break;
-                                    }
-                                    else if (t != 8 && x >= 65 && x <= 117 && y == 42)
-                                    {
-                                        //type id
-                                        gotoXY(x, y);
-                                        putchar(t);
-                                        Id.push_back(t);
-                                        x++;
-                                        ix = x;
-                                    }
-                                    else if (t == 8 && x > 65 && x <= 117)
-                                    {
-                                        //clear
-                                        gotoXY(x, y);
-                                        putchar(' ');
-                                        CurPass.erase(CurPass.length() - 1);
-                                        x--;
-                                        pcx = x;
-                                    }
-                                    else if (t == 8 && x > 65 && x <= 117)
-                                    {
-                                        gotoXY(x, y);
-                                        putchar(' ');
-                                        Id.erase(Id.length() - 1);
-                                        x--;
-                                        ix = x;
-                                    }
-                                }
-                            }
-                        }
-                        else if (si == "Win") {
-                            gotoXY(105, 40);
-                            cout << "You Win";
-                            Sleep(500);
-                            setsignal("UiClient");
-                            return;
-                        }
-                        else if (si == "Lose") {
-                            gotoXY(105, 40);
-                            cout << "You lose";
-                            Sleep(500);
-                            setsignal("UiClient");
-                            return;
-                        }
-                        else {
-                            smap = si;
-                            break;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                setsignal("UiClient");
-                return;
-            }
-
-
-        }
         if (_kbhit())
         {
             char t = _getch();
@@ -415,10 +421,18 @@ void ClientGame::UiClient()
                 }
                 else if (y == 39)
                 {
+                    y = 43;
+                    gotoXY(40, 43);
+                    cout << ">>" << endl;
+                    gotoXY(40, 39);
+                    cout << "  " << endl;
+                }
+                else if (y == 43)
+                {
                     y = 23;
                     gotoXY(40, 23);
                     cout << ">>" << endl;
-                    gotoXY(40, 39);
+                    gotoXY(40, 43);
                     cout << "  " << endl;
                 }
 
@@ -449,6 +463,8 @@ void ClientGame::UiClient()
                     return;
                     //
                     break;
+                case 43:
+                    Restroom();
                 default:
                     break;
                 }
@@ -506,7 +522,7 @@ void ClientGame::CheckUser()
                 while (1)
                 {
                     //wait for receive
-
+                    char network_data[1024];
                     data = network->Receive(network_data);
                     sig = string(network_data, 0, data);
 
@@ -521,6 +537,7 @@ void ClientGame::CheckUser()
                     {
                         //wait for receive
                         //receive
+                        char network_data[1024];
                         data = network->Receive(network_data);
                         sig = string(network_data, 0, data);
 
@@ -833,7 +850,7 @@ void ClientGame::Login()
                     while (1)
                     {
                         //wait for receive
-
+                        char network_data[1024];
                         data = network->Receive(network_data);
                         sig = string(network_data, 0, data);
 
@@ -849,9 +866,11 @@ void ClientGame::Login()
                         while (1)
                         {
                             //wait for receive
+                            char network_data[1024];
                             data = network->Receive(network_data);
                             sig = string(network_data, 0, data);
-                            sig = Encryption::Decrypt(sig);
+                
+                           // sig = Encryption::Decrypt(sig);
                             if (data > 0)
                                 break;
                         }
@@ -1054,6 +1073,7 @@ void ClientGame::Changeinfo()
                     while (1)
                     {
                         //wait for receive
+                        char network_data[1024];
                         data = network->Receive(network_data);
                         sig = string(network_data, 0, data);
 
@@ -1282,7 +1302,7 @@ void ClientGame::Register()
                     while (1)
                     {
                         //wait for receive
-
+                        char network_data[1024];
                         data = network->Receive(network_data);
                         sig = string(network_data, 0, data);
 
@@ -1524,7 +1544,7 @@ void ClientGame::Changepass()
                     while (1)
                     {
                         //wait for receive
-
+                        char network_data[1024];
                         data = network->Receive(network_data);
                         sig = string(network_data, 0, data);
 
@@ -1617,6 +1637,7 @@ void ClientGame::Playgame() {
     int data = 0;
     while (data<=0)
     {
+        char network_data[1024];
         data = network->Receive(network_data);
     }
    
@@ -1683,6 +1704,7 @@ void ClientGame::Playgame() {
                 send(network->ClientSocket, re.c_str(), strlen(re.c_str()), 0);
                 while (1)
                 {
+                    char network_data[1024];
                     data1 = network->Receive(network_data);
                     sig1 = string(network_data, 0, data1);
 
@@ -1752,6 +1774,7 @@ void ClientGame::Playgame() {
     int data_length1 = 0;
     while (sig!="StartGame")
     {
+        char network_data[1024];
         data_length1=network->Receive(network_data);
         sig = string(network_data, 0, data_length1);
 
@@ -1777,11 +1800,12 @@ void ClientGame::Playgame() {
 
                 data_length1 = 0;
                while(1){
+                   char network_data[1024];
                     data_length1 = network->Receive(network_data);
                     sig = string(network_data, 0, data_length1);
                     if (data_length1 != 0) break;
                 } 
-
+               char network_data[1024];
                 data_length1 = network->Receive(network_data);
                 sig = string(network_data, 0, data_length1);
 

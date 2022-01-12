@@ -1,5 +1,6 @@
 #include"ClientNetwork.h"
 #include"NetworkService.h"
+#include"GameClient.h"
 void ClientNetwork::Connect()
 {
 	string ipAddress = "192.168.1.13";			// IP Address of the server
@@ -51,7 +52,7 @@ ClientNetwork::ClientNetwork()
 
 int ClientNetwork::Receive(char* recvbuf)
 {
-	iResult = NetworkService::receiveMessage(ClientSocket, recvbuf, sizeof(recvbuf));
+	iResult = NetworkService::receiveMessage(ClientSocket, recvbuf, 1024);
 	//catch the packet
 	if (iResult == 0)
 	{
