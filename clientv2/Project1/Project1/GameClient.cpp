@@ -1635,9 +1635,10 @@ void ClientGame::Playgame() {
     send(network->ClientSocket, req.c_str(), (int)strlen(req.c_str()), 0);
 
     int data = 0;
+    char network_data[1024];
     while (data<=0)
     {
-        char network_data[1024];
+        
         data = network->Receive(network_data);
     }
    
@@ -1805,9 +1806,6 @@ void ClientGame::Playgame() {
                     sig = string(network_data, 0, data_length1);
                     if (data_length1 != 0) break;
                 } 
-               char network_data[1024];
-                data_length1 = network->Receive(network_data);
-                sig = string(network_data, 0, data_length1);
 
 
                 sig = Encryption::Decrypt(sig);
