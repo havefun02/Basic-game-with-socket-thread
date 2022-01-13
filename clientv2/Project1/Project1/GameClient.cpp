@@ -29,16 +29,18 @@ void ClientGame::update()
     // su dung Encrytion::Decrypt(string); de tin hieu duoc giai ma
     char network_data[1024];
     int data_length = network->Receive(network_data);
-    if (data_length > 0)
-    {
-        string sig = string(network_data, 0, data_length);
-        sig = Encryption::Decrypt(sig);
-        if (sig.substr(0, 6) == "Login:") 
+        if (data_length > 0)
         {
-            setsignal("Login");
-            player->set_id(sig.substr(6));
+            string sig = string(network_data, 0, data_length);
+            sig = Encryption::Decrypt(sig);
+            if (sig.substr(0, 6) == "Login:" && sig.length()>6)
+            {
+                setsignal("Login");
+                player->set_id(sig.substr(6));
+            }
+            else setsignal(sig);
         }
-    }
+    
     if (_signal == "Login")
         Login();
     if (_signal == "Register")
@@ -137,14 +139,14 @@ void ClientGame::Restroom()
                 }
                 else
                 {
-                    string tmp = "No:";
+                    string tmp = "No:"+ idplayer;
 
                     if (getaccess()) {
                         tmp = Encryption::Encrypt(tmp);
                         tmp = "1" + tmp;
                     }
                     send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                    setsignal("UiClient");
+                    //setsignal("UiClient");
                     return;
                 }
             }
@@ -348,14 +350,14 @@ void ClientGame::Restroom()
                         gotoXY(105, 40);
                         cout << "You Win";
                         Sleep(500);
-                        setsignal("UiClient");
+                        //setsignal("UiClient");
                         return;
                     }
                     else if (si == "Lose") {
                         gotoXY(105, 40);
                         cout << "You lose";
                         Sleep(500);
-                        setsignal("UiClient");
+                     //   setsignal("UiClient");
                         return;
                     }
                     else {
@@ -440,9 +442,16 @@ void ClientGame::UiClient()
             }
             if (t == 13)
             {
+                string buf;
                 switch (y) {
                 case 39:
-                    setsignal("Login");
+                    buf = "BackLogin:";
+                    if (getaccess()) {
+
+                        buf = Encryption::Encrypt(buf);
+                        buf = "1" + buf;
+                    }
+                    send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
                     return;
                 case 23:
                     Playgame();
@@ -635,9 +644,16 @@ void ClientGame::CheckUser()
                             }
                             if (t == 13)
                             {
+                                string buf;
                                 switch (y1) {
                                 case 38:
-                                    setsignal("UiClient");
+                                    buf = "BackUiClient:";
+                                    if (getaccess()) {
+                                        
+                                        buf = Encryption::Encrypt(buf);
+                                        buf = "1" + buf;
+                                    }
+                                    send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
                                     return;
                                 case 20:
                                     //check online
@@ -696,20 +712,20 @@ void ClientGame::CheckUser()
                                     {
                                         gotoXY(60, 20);
                                         cout << "Offline";
-                                    } 
+                                    }
 
                                     gotoXY(60, 23);
                                     user1->set_date(day, month, year);
                                     cout << user1->date();
 
                                     gotoXY(60, 26);
-                                    cout<<user1->fullname();
+                                    cout << user1->fullname();
 
                                     gotoXY(60, 29);
                                     cout << "empty";
 
                                     gotoXY(60, 32);
-                                    cout<<user1->point();
+                                    cout << user1->point();
 
                                     break;
                                 default:
@@ -811,7 +827,10 @@ void ClientGame::Login()
             if (Checkid == false && Checkpass == false && !Create && !Create1 && !quit && t == 13 && y==34)
             {
                 //register
-                setsignal("Register");
+                //setsignal("Register");
+                string buf = "BackRegister:";
+
+                send(network->ClientSocket, buf.c_str(), strlen(buf.c_str()), 0);
                 return;
             }
             else
@@ -873,7 +892,7 @@ void ClientGame::Login()
                             if (data > 0)
                                 break;
                         }
-                        setsignal("UiClient");
+                        //setsignal("UiClient");
                         int ind = sig.find_first_of(",");
                         int ind1 = sig.find_first_of(".");
                         int ind2 = sig.find_first_of("/");
@@ -891,12 +910,28 @@ void ClientGame::Login()
                         player->set_day(day);
                         player->set_month(month);
                         player->set_year(year);
+                        string buf="BackUiClient:";
+                        if (getaccess())
+                        {
+
+                            buf = Encryption::Encrypt(buf);
+                            buf = "1" + buf;
+                        }
+                        send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
                         return;
                     }
                     else if (sig == "No")
                     {
                         ui.DrawFailLogin();
-                        setsignal("Login");
+                        string buf = "BackLogin:";
+                        if (getaccess())
+                        {
+
+                            buf = Encryption::Encrypt(buf);
+                            buf = "1" + buf;
+                        }
+                        send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
+                   
                         return;
                     }
 
@@ -909,8 +944,15 @@ void ClientGame::Login()
                         if (_kbhit()) {
                             char t = _getch();
                             if (t == 13) {
-                                cout << _signal;
-                                setsignal("Login");
+                                string buf = "BackLogin:";
+                                if (getaccess())
+                                {
+                                  
+                                    buf = Encryption::Encrypt(buf);
+                                    buf = "1" + buf;
+                                }
+                                send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
+
                                 return;
                             }
                         }
@@ -1048,7 +1090,14 @@ void ClientGame::Changeinfo()
             if (!Checkday && !Checkmonth && !Checkyear && !Checkfullname && !Create && t == 13)
             {
                 //return;
-                setsignal("UiClient");
+                string buf = "BackUiClient:";
+                if (getaccess())
+                {
+                 
+                    buf = Encryption::Encrypt(buf);
+                    buf = "1" + buf;
+                }
+                send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
                 return;
             }
             else
@@ -1084,13 +1133,27 @@ void ClientGame::Changeinfo()
                     if (sig == "Yes")
                     {
                         ui.DrawChangeinfoSuccess();
-                        setsignal("UiClient");
+                        string buf = "BackUiClient:";
+                        if (getaccess())
+                        {
+                          
+                            buf = Encryption::Encrypt(buf);
+                            buf = "1" + buf;
+                        }
+                        send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
                         return;
                     }
                     else if (sig == "No")
                     {
                         ui.DrawFailChangeinfo();
-                        setsignal("ChangeInfo");
+                        string buf = "BackChangeinfo:";
+                        if (getaccess())
+                        {
+                         
+                            buf = Encryption::Encrypt(buf);
+                            buf = "1" + buf;
+                        }
+                        send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
                         return;
                     }
                 }
@@ -1281,7 +1344,14 @@ void ClientGame::Register()
             }
             if (Checkid == false && Checkpass == false && Checkcurpass == false && Create == false && t == 13 && y==43)
             {
-                setsignal("Login");
+                string buf = "BackLogin:";
+                if (getaccess())
+                {
+                 
+                    buf = Encryption::Encrypt(buf);
+                    buf = "1" + buf;
+                }
+                send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
                 return;
             }
             else
@@ -1313,14 +1383,29 @@ void ClientGame::Register()
                     }
                     if (sig == "Yes")
                     {
-                        setsignal("Login");
+                        string buf = "BackLogin:";
+                        if (getaccess())
+                        {
+                          
+                            buf = Encryption::Encrypt(buf);
+                            buf = "1" + buf;
+                        }
+                        send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
                         return;
                     }
                     else if (sig == "No")
                     {
                         ui.DrawFailReg();
-                        setsignal("Register");
+                        string buf = "BackRegister:";
+                        if (getaccess())
+                        {
+                          
+                            buf = Encryption::Encrypt(buf);
+                            buf = "1" + buf;
+                        }
+                        send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
                         return;
+
                     }
                 }
                 else if (t != 8 && x >= 65 && x < 117 && Checkpass)
@@ -1519,8 +1604,14 @@ void ClientGame::Changepass()
             }
             if (Checkid == false && Checkpass == false && Checkcurpass == false && Create == true && t == 13 && y==39)
             {
-                setsignal("UiClient");
-                //return;
+                string buf = "BackUiClient:";
+                if (getaccess())
+                {
+                   
+                    buf = Encryption::Encrypt(buf);
+                    buf = "1" + buf;
+                }
+                send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
                 return;
             }
             else
@@ -1528,7 +1619,6 @@ void ClientGame::Changepass()
                 if (Checkid == false && Checkpass == false && Checkcurpass == false && Create == false && t == 13 && y==39)
                 {
                     string tmp = "Changepass:" + Id + "," + CurPass + "." + Pass;
-                    tmp = Encryption::Encrypt(tmp);
                     send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                     int data;
                     string sig;
@@ -1555,13 +1645,28 @@ void ClientGame::Changepass()
                     if (sig == "Yes")
                     {
                         ui.DrawChangePassSuccess();
-                        setsignal("UiClient");
+                        string buf = "BackUiClient:";
+                        if (getaccess())
+                        {
+                         
+                            buf = Encryption::Encrypt(buf);
+                            buf = "1" + buf;
+                        }
+                        send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
+  
                         return;
                     }
                     else if (sig == "No")
                     {
                         ui.DrawFailChangepass();
-                        setsignal("ChangePass");
+                        string buf = "BackChangePass:";
+                        if (getaccess())
+                        {
+                           
+                            buf = Encryption::Encrypt(buf);
+                            buf = "1" + buf;
+                        }
+                        send(network->ClientSocket, buf.c_str(), (int)strlen(buf.c_str()), 0);
                         return;
                     }
                 }

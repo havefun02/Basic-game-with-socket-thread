@@ -63,6 +63,7 @@ void ServerGame::receive(int idnet)
 					string buffer = Encryption::Encrypt("Yes");
 
 					send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
+					s = Encryption::Encrypt(s);
 					send(curclient, s.c_str(), (int)strlen(s.c_str()), 0);
 				}
 				else if (!handler.Checkuser(network->database, content, s))
@@ -167,9 +168,10 @@ void ServerGame::receive(int idnet)
 			}
 			else if (signal == "No") {
 				tmp = "No";
-
+				idc1 = content;
 				tmp = Encryption::Encrypt(tmp);
-
+				send(network->sessions[stoi(idc1)].first, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+				tmp = Encryption::Encrypt("UiClient");
 				send(curclient, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
 			}
 			/*	else if (signal == "File1:")
@@ -268,9 +270,17 @@ void ServerGame::receive(int idnet)
 					mes = Encryption::Encrypt(mes);
 
 					send(network->sessions[idnet].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
+
+					mes = Encryption::Encrypt("UiClient");
+
+					send(network->sessions[idnet].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
+
 					mes = "Lose";
 
 					mes = Encryption::Encrypt(mes);
+
+					send(network->sessions[stoi(idc1)].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
+					mes = Encryption::Encrypt("UiClient");
 
 					send(network->sessions[stoi(idc1)].first, mes.c_str(), (int)strlen(mes.c_str()), 0);
 				}
@@ -307,6 +317,31 @@ void ServerGame::receive(int idnet)
 				send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 				closesocket(curclient);
 				ExitThread(0);
+			}
+			else if (signal == "BackUiClient")
+			{
+				string buffer = Encryption::Encrypt("UiClient");
+				send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
+			}
+			else if (signal == "BackRegister")
+			{
+				string buffer = Encryption::Encrypt("Register");
+				send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
+			}
+			else if (signal == "BackLogin")
+			{
+				string buffer = Encryption::Encrypt("Login");
+				send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
+			}
+			else if (signal == "BackChangeinfo")
+			{
+				string buffer = Encryption::Encrypt("ChangeInfor");
+				send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
+			}
+			else if (signal == "BackChangePass")
+			{
+				string buffer = Encryption::Encrypt("ChangePass");
+				send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
 			}
 
 		}
