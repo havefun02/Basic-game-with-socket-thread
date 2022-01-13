@@ -516,7 +516,6 @@ void ClientGame::CheckUser()
                 }
 
                 send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
-                break;
                 gotoXY(40, 22);
                 cout << "                                                         ";
                 while (1)
