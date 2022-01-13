@@ -149,6 +149,8 @@ void ServerGame::receive(int idnet)
 				{
 					//send to another client
 
+					idc1 = content;
+
 					string tmp = "Join+" + to_string(idnet);
 
 					tmp = Encryption::Encrypt(tmp);
@@ -222,16 +224,34 @@ void ServerGame::receive(int idnet)
 				bool IsHit, IsFinish;
 				string message;
 				string attackSignal = content;
+
+				cout << "content "<<content << endl;
+				
+				cout <<"Opp: " <<idc1 << endl;
+
+				network->sessions[stoi(idc1)].second.ShowMap();
+
+
+
 				x = BattleShip::convertToX(attackSignal);
 				y = BattleShip::convertToY(attackSignal);
 				result = network->sessions[stoi(idc1)].second.AttackShip(x, y);
 				tie(IsHit, IsFinish, message) = result;
+				
+				cout << message << endl;
+				
 				string resultMatrix1 = network->sessions[stoi(idc1)].second.convertMap();
 				string resultMatrix2 = network->sessions[idnet].second.convertMap();
 				// Ex: resultMatrix1 = "010000100100...."
 
+				cout << resultMatrix1 << endl;
+				cout << resultMatrix2 << endl;
+
 				resultMatrix1 = Encryption::Encrypt(resultMatrix1);
 				resultMatrix2 = Encryption::Encrypt(resultMatrix2);
+
+				
+
 
 				send(network->sessions[stoi(idc1)].first, resultMatrix1.c_str(), (int)strlen(resultMatrix1.c_str()), 0);
 				send(network->sessions[idnet].first, resultMatrix2.c_str(), (int)strlen(resultMatrix2.c_str()), 0);
