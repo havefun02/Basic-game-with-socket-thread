@@ -1383,13 +1383,38 @@ void ClientGame::Register()
                     int data;
                     string sig;
                     string tmp = "Register:" + Id + "," + Pass + "." + Fullname + "/" + Day + "+" + Month + "-" + Year;
-                    if (getaccess())
+                   /* if (getaccess())
                     {
                         tmp = Encryption::Encrypt(tmp);
                         tmp = "1" + tmp;
+                    }*/
+
+                    clrscr();
+                    while (1)
+                    {
+                        ui.setDrawEncrypt();
+                        if (_kbhit()) {
+                            char t = _getch();
+                            if (t == 13)
+                            {
+                                //encrypt
+
+                                tmp = Encryption::Encrypt(tmp);
+                                tmp = "1" + tmp;
+                                setaccess(1);
+                                send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                                break;
+                            }
+                            else
+                            {
+                                setaccess(0);
+                                send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                                break;
+                            }
+                        }
                     }
 
-                    send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0); 
+                    //send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0); 
                     while (1)
                     {
                         //wait for receive
@@ -1641,7 +1666,7 @@ void ClientGame::Changepass()
                 if (Checkid == false && Checkpass == false && Checkcurpass == false && Create == false && t == 13 && y==39)
                 {
                     string tmp = "Changepass:" + Id + "," + CurPass + "." + Pass;
-                    send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
+                    //send(network->ClientSocket, tmp.c_str(), (int)strlen(tmp.c_str()), 0);
                     int data;
                     string sig;
                     if (getaccess())
@@ -1755,7 +1780,7 @@ void ClientGame::Playgame() {
     string req = "ListOnline";
     if (getaccess())
     {
-        string req = Encryption::Encrypt("ListOnline");
+        req = Encryption::Encrypt(req);
         req = "1" + req;
     }
     send(network->ClientSocket, req.c_str(), (int)strlen(req.c_str()), 0);
@@ -1824,7 +1849,7 @@ void ClientGame::Playgame() {
 
                 if (getaccess())
                 {
-                    string re = Encryption::Encrypt(re);
+                    re = Encryption::Encrypt(re);
                     re = "1" + re;
                 }
 

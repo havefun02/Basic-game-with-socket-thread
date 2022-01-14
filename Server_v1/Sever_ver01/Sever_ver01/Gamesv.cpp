@@ -52,7 +52,7 @@ void ServerGame::receive(int idnet)
 			int indexsig = tmp.find_first_of(":");
 			string signal = tmp.substr(0, indexsig);
 			string content = tmp.substr(indexsig + 1);
-			cout << "Wait for client!" << endl;
+			//cout << "Wait for client!" << endl;
 			cout << "Message from client: " << idnet <<" : " << signal << endl;
 			//check 
 			if (signal == "Find")
@@ -233,9 +233,9 @@ void ServerGame::receive(int idnet)
 
 
 
-				x = BattleShip::convertToX(attackSignal);
-				y = BattleShip::convertToY(attackSignal);
-				result = network->sessions[stoi(idc1)].second.AttackShip(x, y);
+				x = BattleShip::convertToY(attackSignal);
+				y = BattleShip::convertToX(attackSignal);
+				result = network->sessions[stoi(idc1)].second.AttackShip(x-1, y-1);
 				tie(IsHit, IsFinish, message) = result;
 				
 				cout << message << endl;
@@ -244,8 +244,8 @@ void ServerGame::receive(int idnet)
 				string resultMatrix2 = network->sessions[idnet].second.convertMap();
 				// Ex: resultMatrix1 = "010000100100...."
 
-				cout << resultMatrix1 << endl;
-				cout << resultMatrix2 << endl;
+				/*cout << resultMatrix1 << endl;
+				cout << resultMatrix2 << endl;*/
 
 				resultMatrix1 = Encryption::Encrypt(resultMatrix1);
 				resultMatrix2 = Encryption::Encrypt(resultMatrix2);
@@ -255,6 +255,12 @@ void ServerGame::receive(int idnet)
 
 				send(network->sessions[stoi(idc1)].first, resultMatrix1.c_str(), (int)strlen(resultMatrix1.c_str()), 0);
 				send(network->sessions[idnet].first, resultMatrix2.c_str(), (int)strlen(resultMatrix2.c_str()), 0);
+
+				// send cai message dum con tu luc nay a thua cu
+				//send(network->sessions[stoi(idc1)].first, message.c_str(), (int)strlen(message.c_str()), 0);
+				//send(network->sessions[idnet].first, message.c_str(), (int)strlen(message.c_str()), 0);
+				// roi gan cai message nay duoi your turn hoac wait cua client
+
 				if (IsHit) {				// true mean the current Client who hit can continue playing
 					string mes = "Your turn!";
 

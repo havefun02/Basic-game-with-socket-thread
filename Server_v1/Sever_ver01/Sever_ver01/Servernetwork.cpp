@@ -83,9 +83,9 @@ void ServerNetwork::getInfosv(SOCKADDR_IN sv, int size)
 		char ipclient[INET_ADDRSTRLEN];
 		//convert Internet network address into a string 
 		inet_ntop(AF_INET, &ip_client->sin_addr, ipclient, INET_ADDRSTRLEN);
-		cout << "ip SV: " << ipclient << endl;
+		cout << "ip SV: " << "192.168.100.7" << endl;
 		cout << "port : " << ntohs(sv.sin_port) << endl;
-		cout << "------------------------------------------------------------" << endl;
+		cout << "--------------------------*\\ LOG \\*-------------------------" << endl;
 }
 void ServerNetwork::getInfoClient(SOCKADDR_IN cl, int size)
 {
