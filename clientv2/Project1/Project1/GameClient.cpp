@@ -218,7 +218,6 @@ void ClientGame::Restroom()
             }
 
             send(network->ClientSocket, tm.c_str(), (int)strlen(tm.c_str()), 0);
-            int ind = 0;
             while (1)
             {
                 ui.draw.DrawControler();
@@ -237,7 +236,17 @@ void ClientGame::Restroom()
                     }
 
                     si = Encryption::Decrypt(si);
-                    if (si == "Wait!") {
+
+
+                    if (si[0] == '1')
+                    {
+                        gotoXY(105, 40);
+                        cout << "                      ";
+                        si = si.substr(1);
+                        gotoXY(105, 40);
+                        cout << si;
+                    }
+                    else if (si == "Wait!") {
 
                         gotoXY(105, 40);
                         cout << "                  ";
@@ -245,32 +254,13 @@ void ClientGame::Restroom()
                         gotoXY(105, 40);
                         cout << "Wait";
 
-                        gotoXY(100, 42);
-                        cout << "Miss";
-
-                        gotoXY(100, 42);
-                        cout << "                  ";
-
                         continue;
                     }
                     else if (si == "Your turn!")
                     {
-                        ind++;
-                        if (ind == 1)
-                        {
-                            gotoXY(105, 40);
-                            cout << "Your turn";
-                            gotoXY(100, 42);
-                            cout << "Your move first";
-                        }
-                        else
-                        {
-                            gotoXY(105, 40);
-                            cout << "Your turn";
-                            gotoXY(100, 42);
-                            cout << "Hit!!";
-                        }
                        
+                        gotoXY(105, 40);
+                        cout << "Your turn";
                         string Id = "", CurPass = "";
                         int x = 65, y = 40, ix = x, pcx = x;
                         gotoXY(37, 40); cout << ">>" << endl;
@@ -1965,7 +1955,15 @@ void ClientGame::Playgame() {
                /* cout << sig << endl;
                 Sleep(1000);*/
 
-                if (sig == "Wait!")
+                if (sig[0] == '1')
+                {
+                    gotoXY(105, 40);
+                    cout << "                      ";
+                    sig = sig.substr(1);
+                    gotoXY(105, 40);
+                    cout << sig;
+                }
+                else if (sig == "Wait!")
                 {
                     gotoXY(105, 40);
                     cout << "                  ";
@@ -2081,14 +2079,14 @@ void ClientGame::Playgame() {
                     gotoXY(105, 40);
                     cout << "You Win";
                     Sleep(500);
-                    setsignal("UiClient");
+                   
                     return;
                 }
                 else if (sig == "Lose") {
                     gotoXY(105, 40);
                     cout << "You lose";
                     Sleep(500);
-                    setsignal("UiClient");
+                   
                     return;
                 }
                 else {

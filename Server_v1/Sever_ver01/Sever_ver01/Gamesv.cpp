@@ -257,6 +257,11 @@ void ServerGame::receive(int idnet)
 				send(network->sessions[stoi(idc1)].first, resultMatrix1.c_str(), (int)strlen(resultMatrix1.c_str()), 0);
 				send(network->sessions[idnet].first, resultMatrix2.c_str(), (int)strlen(resultMatrix2.c_str()), 0);
 
+				message = Encryption::Encrypt(message);
+				message = "1" + message;
+				send(network->sessions[stoi(idc1)].first, message.c_str(), (int)strlen(message.c_str()), 0);
+				send(network->sessions[idnet].first, message.c_str(), (int)strlen(message.c_str()), 0);
+
 				// send cai message dum con tu luc nay a thua cu
 				//send(network->sessions[stoi(idc1)].first, message.c_str(), (int)strlen(message.c_str()), 0);
 				//send(network->sessions[idnet].first, message.c_str(), (int)strlen(message.c_str()), 0);
