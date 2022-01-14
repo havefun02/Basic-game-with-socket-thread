@@ -99,7 +99,6 @@ vector<PlayerAccount*> ClientGame::getOnlinelist(string format)
     return list;
 }
 
-
 void ClientGame::Restroom()
 {
     clrscr();
@@ -219,6 +218,7 @@ void ClientGame::Restroom()
             }
 
             send(network->ClientSocket, tm.c_str(), (int)strlen(tm.c_str()), 0);
+            int ind = 0;
             while (1)
             {
                 ui.draw.DrawControler();
@@ -238,17 +238,39 @@ void ClientGame::Restroom()
 
                     si = Encryption::Decrypt(si);
                     if (si == "Wait!") {
+
                         gotoXY(105, 40);
                         cout << "                  ";
-                        //Sleep(100);
+                        
                         gotoXY(105, 40);
                         cout << "Wait";
+
+                        gotoXY(100, 42);
+                        cout << "Miss";
+
+                        gotoXY(100, 42);
+                        cout << "                  ";
+
                         continue;
                     }
                     else if (si == "Your turn!")
                     {
-                        gotoXY(105, 40);
-                        cout << "Your turn";
+                        ind++;
+                        if (ind == 1)
+                        {
+                            gotoXY(105, 40);
+                            cout << "Your turn";
+                            gotoXY(100, 42);
+                            cout << "Your move first";
+                        }
+                        else
+                        {
+                            gotoXY(105, 40);
+                            cout << "Your turn";
+                            gotoXY(100, 42);
+                            cout << "Hit!!";
+                        }
+                       
                         string Id = "", CurPass = "";
                         int x = 65, y = 40, ix = x, pcx = x;
                         gotoXY(37, 40); cout << ">>" << endl;
@@ -299,7 +321,7 @@ void ClientGame::Restroom()
                                 {
                                     //send to sv
                                     if (stoi(Id) < 10)
-                                        Id = "0" + Id;//x
+                                        Id = "0" + Id;//
                                     if (stoi(CurPass) < 10)
                                         CurPass = "0" + CurPass;//y
                                     string packet = "atk:" + Id + CurPass;
