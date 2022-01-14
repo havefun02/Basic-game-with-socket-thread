@@ -236,9 +236,9 @@ void ClientGame::Restroom()
                     }
 
 
-                    if (si[0] == '.')
+                    if (si.substr(0,3) =="mes")
                     {
-                        si = Encryption::Decrypt(si.substr(1));
+                        si = Encryption::Decrypt(si.substr(3));
                         gotoXY(105, 40);
                         cout << "                      ";
                         gotoXY(105, 40);
@@ -1954,9 +1954,9 @@ void ClientGame::Playgame() {
                /* cout << sig << endl;
                 Sleep(1000);*/
 
-                if (sig[0] == '.')
+                if (sig.substr(0,3) == "mes")
                 {
-                    sig = Encryption::Decrypt(sig.substr(1));
+                    sig = Encryption::Decrypt(sig.substr(3));
                     gotoXY(105, 40);
                     cout << "                      ";
                   
