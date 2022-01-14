@@ -910,11 +910,12 @@ void ClientGame::Login()
                             data = network->Receive(network_data);
                             sig = string(network_data, 0, data);
                 
-                           // sig = Encryption::Decrypt(sig);
+                            sig = Encryption::Decrypt(sig);
                             if (data > 0)
                                 break;
                         }
                         //setsignal("UiClient");
+
                         int ind = sig.find_first_of(",");
                         int ind1 = sig.find_first_of(".");
                         int ind2 = sig.find_first_of("/");

@@ -83,6 +83,7 @@ void ServerGame::receive(int idnet)
 				{
 					string buffer = Encryption::Encrypt("Yes");
 					send(curclient, buffer.c_str(), (int)strlen(buffer.c_str()), 0);
+					s = Encryption::Encrypt(s);
 					send(curclient, s.c_str(), (int)strlen(s.c_str()), 0);
 				}
 				else if (!handler.ListenLogin(network->database, content, s, ind1))
