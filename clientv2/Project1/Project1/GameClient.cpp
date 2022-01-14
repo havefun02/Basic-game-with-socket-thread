@@ -241,7 +241,6 @@ void ClientGame::Restroom()
                         si = Encryption::Decrypt(si.substr(1));
                         gotoXY(105, 40);
                         cout << "                      ";
-                        si = si.substr(1);
                         gotoXY(105, 40);
                         cout << si;
                         continue;
@@ -1960,7 +1959,7 @@ void ClientGame::Playgame() {
                     sig = Encryption::Decrypt(sig.substr(1));
                     gotoXY(105, 40);
                     cout << "                      ";
-                    sig = sig.substr(1);
+                  
                     gotoXY(105, 40);
                     cout << sig;
                     continue;
