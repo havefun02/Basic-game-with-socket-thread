@@ -236,15 +236,6 @@ void ClientGame::Restroom()
                     }
 
 
-                    if (si.substr(0,3) =="mes")
-                    {
-                        si = Encryption::Decrypt(si.substr(3));
-                        gotoXY(105, 40);
-                        cout << "                      ";
-                        gotoXY(105, 40);
-                        cout << si;
-                        continue;
-                    }
                     si = Encryption::Decrypt(si);
                     if (si == "Wait!") {
 
