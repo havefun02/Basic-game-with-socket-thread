@@ -705,7 +705,7 @@ void ClientGame::CheckUser()
                                 case 26:
                                     //check name
                                     gotoXY(60, 26);
-                                    user1->fullname();
+                                    cout<<user1->fullname();
                                     Sleep(500);
                                     cout << "                 ";
                                     break;
