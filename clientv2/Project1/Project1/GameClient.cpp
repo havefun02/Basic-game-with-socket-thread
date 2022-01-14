@@ -238,7 +238,7 @@ void ClientGame::Restroom()
                     si = Encryption::Decrypt(si);
 
 
-                    if (si[0] == '1')
+                    if (si[0] == '.')
                     {
                         gotoXY(105, 40);
                         cout << "                      ";
@@ -1955,7 +1955,7 @@ void ClientGame::Playgame() {
                /* cout << sig << endl;
                 Sleep(1000);*/
 
-                if (sig[0] == '1')
+                if (sig[0] == '.')
                 {
                     gotoXY(105, 40);
                     cout << "                      ";
