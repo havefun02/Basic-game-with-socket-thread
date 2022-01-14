@@ -359,12 +359,12 @@ tuple<bool, bool, string> BattleShip::AttackShip(int x, int y) {
 
 			if (temp->Destroy()) {
 				_Ship[_map[x][y] - 1].RemoveShip(i);
-				resultAfter << "\nthe ship is destroyed";
+				resultAfter << " and the ship is destroyed";
 				totalShip--;
 			}
 
 			if (totalShip <= 0) {
-				resultAfter << "\nthere is no ships in map";
+				resultAfter << "and there is no ships in map";
 				Finish = true;
 			}
 			result = make_tuple(true, Finish, resultAfter.str());
