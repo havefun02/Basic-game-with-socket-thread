@@ -235,18 +235,19 @@ void ClientGame::Restroom()
                             break;
                     }
 
-                    si = Encryption::Decrypt(si);
-
 
                     if (si[0] == '.')
                     {
+                        si = Encryption::Decrypt(si.substr(1));
                         gotoXY(105, 40);
                         cout << "                      ";
                         si = si.substr(1);
                         gotoXY(105, 40);
                         cout << si;
+                        continue;
                     }
-                    else if (si == "Wait!") {
+                    si = Encryption::Decrypt(si);
+                    if (si == "Wait!") {
 
                         gotoXY(105, 40);
                         cout << "                  ";
@@ -1950,20 +1951,24 @@ void ClientGame::Playgame() {
                 } 
 
 
-                sig = Encryption::Decrypt(sig);
-
+              
                /* cout << sig << endl;
                 Sleep(1000);*/
 
                 if (sig[0] == '.')
                 {
+                    sig = Encryption::Decrypt(sig.substr(1));
                     gotoXY(105, 40);
                     cout << "                      ";
                     sig = sig.substr(1);
                     gotoXY(105, 40);
                     cout << sig;
+                    continue;
                 }
-                else if (sig == "Wait!")
+
+                sig = Encryption::Decrypt(sig);
+
+                if (sig == "Wait!")
                 {
                     gotoXY(105, 40);
                     cout << "                  ";
