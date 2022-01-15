@@ -279,7 +279,7 @@ bool BattleShip::CanShipPlaceHere(Point start, Point end, int type, vector < vec
 		return true;
 	}
 	else if (type == 4) {
-		if (end.y() > start.y()) { //place horizontally
+		if (end.y() - 1 > start.y()) { //place horizontally
 			for (int row = start.x(); row < start.x() + 2; row++) {
 				for (int i = start.y(); i < start.y() + 5; i++) {
 					if (visited[row][i]) {
@@ -300,7 +300,7 @@ bool BattleShip::CanShipPlaceHere(Point start, Point end, int type, vector < vec
 		return true;
 	}
 	else if (type == 5) {
-		if (end.y() > start.y()) { //place horizontally
+		if (end.y() - 1 > start.y()) { //place horizontally
 			for (int row = start.x(); row < start.x() + 2; row++) {
 				for (int i = start.y(); i < start.y() + 7; i++) {
 					if (visited[row][i]) {

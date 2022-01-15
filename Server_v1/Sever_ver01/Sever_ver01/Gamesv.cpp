@@ -234,8 +234,8 @@ void ServerGame::receive(int idnet)
 
 
 
-				x = BattleShip::convertToY(attackSignal);
-				y = BattleShip::convertToX(attackSignal);
+				x = BattleShip::convertToX(attackSignal);
+				y = BattleShip::convertToY(attackSignal);
 				result = network->sessions[stoi(idc1)].second.AttackShip(x-1, y-1);
 				tie(IsHit, IsFinish, message) = result;
 				
@@ -258,10 +258,7 @@ void ServerGame::receive(int idnet)
 				send(network->sessions[idnet].first, resultMatrix2.c_str(), (int)strlen(resultMatrix2.c_str()), 0);
 
 
-				// send cai message dum con tu luc nay a thua cu
-				//send(network->sessions[stoi(idc1)].first, message.c_str(), (int)strlen(message.c_str()), 0);
-				//send(network->sessions[idnet].first, message.c_str(), (int)strlen(message.c_str()), 0);
-				// roi gan cai message nay duoi your turn hoac wait cua client
+			
 
 				if (IsHit) {				// true mean the current Client who hit can continue playing
 					string mes = "Your turn!";
